@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Typd options</title>
+    <style>
+      body { padding: 10px; }
+      #options-message {
+      color: white;
+      background-color: #007FB1;
+      padding: 8px;
+      border-radius: 4px;
+      display:none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="options-message"></div>
+    <h2>Passphrase</h2>
+    <div>
+      <input id="passphrase" type="password" placeholder="Passphrase here" />
+    </div>
+    <h2>Include type="password"</h2>
+    <div>
+      <input id="include-password" type="checkbox" value="include" />
+    </div>
+    <button id="save-options">Save options</button>
+    <hr>
+    <h2>Clear all data</h2>
+    <button id="clear-data">Clear all data</button>
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/options.js"></script>
+  </body>
+</html>
