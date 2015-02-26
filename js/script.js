@@ -3,19 +3,22 @@ $(function() {
     //     // 5,242,880 byte
     // });
 
-    var passwordInputNames = [];
+    var typePasswordNames = [];
     function gatherData() {
-        passwordInputNames = [];
+        typePasswordNames = [];
         return $('input:visible, select:visible, textarea:visible').each(function() {
             var $self = $(this);
             if ($self.attr('type') == 'password') {
-                passwordInputNames.push($self.attr('name'));
+                typePasswordNames.push($self.attr('name'));
             }
         }).serializeObject();
     }
 
     function restoreData(data) {
         _.each(data, function(value, name) {
+            if (_.isArray(value)) {
+                value = value[0]; // @todo each set
+            }            
             var type = $('input[name="' + name + '"]:visible').attr('type');
             switch (type) {
             case undefined:
@@ -130,7 +133,7 @@ $(function() {
             }
 
             if (!includePassword) {
-                _.map(passwordInputNames, function(name) {
+                _.map(typePasswordNames, function(name) {
                     data[name] = '';
                 });
             }
