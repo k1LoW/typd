@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "typestac (仮:フォームの入力値を自動で保存してCtrl+Shift+iで補完できるやつ)",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "browser_action": {
         "default_icon": "off.png"
     },

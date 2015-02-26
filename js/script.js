@@ -15,32 +15,55 @@ $(function() {
     }
 
     function restoreData(data) {
-        _.each(data, function(value, name) {
-            if (_.isArray(value)) {
-                value = value[0]; // @todo each set
-            }            
+        _.each(data, function(values, name) {
             var type = $('input[name="' + name + '"]:visible').attr('type');
+            if (!_.isArray(values)) {
+                values = [values];
+            }            
+            
             switch (type) {
             case undefined:
-                $('select[name="' + name + '"]:visible').val(value);
-                $('textarea[name="' + name + '"]:visible').val(value);
+                $('select[name="' + name + '"]:visible').each(function(i) {
+                    if (_.size(values) <= i) {
+                        return;
+                    }
+                    $(this).val(values[i]);
+                });
+                $('textarea[name="' + name + '"]:visible').each(function(i) {
+                    if (_.size(values) <= i) {
+                        return;
+                    }
+                    $(this).val(values[i]);
+                });
                 break;
             case 'checkbox':
-                if (value) {
-                    $('input[type="checkbox"][name="' + name + '"]:visible').prop('checked', true);
-                } else {
-                    $('input[type="checkbox"][name="' + name + '"]:visible').prop('checked', false);
-                }
+                    $('input[type="checkbox"][name="' + name + '"]:visible').each(function(i) {
+                        if (_.size(values) <= i) {
+                            return;
+                        }
+                        if (values[i]) {
+                            $(this).prop('checked', true);
+                        } else {
+                            $(this).prop('checked', false);
+                        }
+                    });
                 break;
             case 'radio':
-                $('input[type="radio"][name="' + name + '"][value="' + value  + '"]:visible').prop('checked', true);
+                _.map(values, function(value) {
+                    $('input[type="radio"][name="' + name + '"][value="' + value  + '"]:visible').prop('checked', true);
+                });
                 break;
             case 'text':
             case 'integer':
             case 'email':
             case 'password':
             default:
-                $('input[name="' + name + '"]:visible').val(value);
+                $('input[name="' + name + '"]:visible').each(function(i) {
+                    if (_.size(values) <= i) {
+                        return;
+                    }
+                    $(this).val(values[i]);
+                });
                 break;
             }
         });
