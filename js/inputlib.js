@@ -9,12 +9,20 @@ var typePasswordNames = [];
  */
 function gatherInputData() {
     typePasswordNames = [];
-    return $('input:visible, select:visible, textarea:visible').each(function() {
+    var obj = $('input:visible, select:visible, textarea:visible').each(function() {
         var $self = $(this);
         if ($self.attr('type') == 'password') {
             typePasswordNames.push($self.attr('name'));
         }
     }).serializeObject();
+    $('input[type="checkbox"]:not(:checked):visible').each(function(){
+        var $self = $(this);
+        var name = $self.attr('name');
+        if (name) {
+            obj[name] = '';
+        }
+    });
+    return obj;
 }
 
 /*
@@ -52,7 +60,7 @@ function restoreInputData(data) {
             $('input[type="checkbox"][name="' + name + '"]:visible').each(function(i) {
                 if (_.size(values) <= i) {
                     return;
-                }
+                }                
                 if (values[i]) {
                     $(this).prop('checked', true);
                 } else {

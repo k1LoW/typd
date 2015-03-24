@@ -1,8 +1,6 @@
 // pubsub
 var pubsub = Pubsub.create();
 
-// @todo checkedでないcheckboxがデータとしてserializeされない
-
 $(function() {
     // chrome.storage.local.getBytesInUse(null, function(byteInUse) {
     //     // 5,242,880 byte
