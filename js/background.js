@@ -21,6 +21,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 chrome.storage.local.get(['enabled'], function(items) {
     if(chrome.extension.lastError !== undefined) {
         // failure
+        throw 'typd: chrome.extention.error';
     } else {
         // success
         if (_.has(items, 'enabled')) {
@@ -35,6 +36,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.storage.local.get(['enabled'], function(items) {
         if(chrome.extension.lastError !== undefined) {
             // failure
+            throw 'typd: chrome.extention.error';
         } else {
             // success
             var toggle = false;
@@ -47,7 +49,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
             chrome.storage.local.set(updates, function() {
                 if(chrome.extension.lastError !== undefined) {
                     // failure
-                    console.error('chrome.extention.error');
+                    throw 'typd: chrome.extention.error';
                 }
                 else {
                     // success

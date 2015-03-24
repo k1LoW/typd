@@ -1,79 +1,17 @@
+// pubsub
+var pubsub = Pubsub.create();
+
+// @todo checkedでないcheckboxがデータとしてserializeされない
+
 $(function() {
     // chrome.storage.local.getBytesInUse(null, function(byteInUse) {
     //     // 5,242,880 byte
     // });
-
-    var typePasswordNames = [];
-    function gatherData() {
-        typePasswordNames = [];
-        return $('input:visible, select:visible, textarea:visible').each(function() {
-            var $self = $(this);
-            if ($self.attr('type') == 'password') {
-                typePasswordNames.push($self.attr('name'));
-            }
-        }).serializeObject();
-    }
-
-    function restoreData(data) {
-        _.each(data, function(values, name) {
-            var type = $('input[name="' + name + '"]:visible').attr('type');
-            if (!_.isArray(values)) {
-                values = [values];
-            }            
-            
-            switch (type) {
-            case undefined:
-                $('select[name="' + name + '"]:visible').each(function(i) {
-                    if (_.size(values) <= i) {
-                        return;
-                    }
-                    $(this).val(values[i]);
-                });
-                $('textarea[name="' + name + '"]:visible').each(function(i) {
-                    if (_.size(values) <= i) {
-                        return;
-                    }
-                    $(this).val(values[i]);
-                });
-                break;
-            case 'checkbox':
-                    $('input[type="checkbox"][name="' + name + '"]:visible').each(function(i) {
-                        if (_.size(values) <= i) {
-                            return;
-                        }
-                        if (values[i]) {
-                            $(this).prop('checked', true);
-                        } else {
-                            $(this).prop('checked', false);
-                        }
-                    });
-                break;
-            case 'radio':
-                _.map(values, function(value) {
-                    $('input[type="radio"][name="' + name + '"][value="' + value  + '"]:visible').prop('checked', true);
-                });
-                break;
-            case 'text':
-            case 'integer':
-            case 'email':
-            case 'password':
-            default:
-                $('input[name="' + name + '"]:visible').each(function(i) {
-                    if (_.size(values) <= i) {
-                        return;
-                    }
-                    $(this).val(values[i]);
-                });
-                break;
-            }
-        });
-    }
-
-    var hashkey = CryptoJS.SHA256(JSON.stringify(_.keys(gatherData()).sort())).toString();
-
-    chrome.storage.local.get(['enabled', 'options', hashkey], function(items) {
+    
+    var keyhash = generateKeyhash(gatherInputData());
+    chrome.storage.local.get(['enabled', 'options', 'tmpkey', 'tmpdata', keyhash], function(items) {
         if(chrome.extension.lastError !== undefined) { // failure
-            return;
+            throw 'typd: chrome.extention.error';
         }
 
         if (!_.has(items, 'enabled')) {
@@ -83,75 +21,91 @@ $(function() {
             return;
         }
         if (!_.has(items, 'options')) {
-            alert('typestac: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
             return;
         }
         if (!_.has(items['options'], 'passphrase')) {
-            alert('typestac: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
             return;
         }
         if (!items['options']['passphrase']) {
-            alert('typestac: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
             return;
         }
 
         var passphrase = items['options']['passphrase'];
         var includePassword = items['options']['include-password'];
-
         var dataLength = 0;
         var pos = 0;
-        if (_.has(items, hashkey)) {
-            dataLength = items[hashkey].length;
+        
+        if (items['tmpkey'] && items['tmpdata']) {
+            var tmpkey = items['tmpkey'];
+            var tmpdata = items['tmpdata'];
+            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>入力データを保存しますか？</p><button class="typd-btn typd-btn-save">保存する</button><button class="typd-btn typd-btn-cancel">キャンセル</button></div></div>');
+            $('.typd-box').animate({
+                bottom:0
+            }, function() {
+                var $box = $(this);
+                $('.typd-btn-save').on('click', function() {
+                    setPrevdata(tmpkey, tmpdata);
+                    removeTmpdata();
+                    $box.animate({bottom:-50}, function() {
+                        $box.remove();
+                    });
+                });
+                $('.typd-btn-cancel').on('click', function() {
+                    removeTmpdata();
+                    $box.animate({bottom:-50}, function() {
+                        $box.remove();
+                    });
+                });
+            });
+        }
+        
+        if (_.has(items, keyhash)) {
+            dataLength = items[keyhash].length;
         }
         chrome.runtime.sendMessage({length:dataLength}, function(response) {});
 
-        key('ctrl+shift+i', function(event, handler){
+        key('shift+r', function(event, handler){
             if (dataLength == 0) {
-                return;
+                return false;
             }
-            try {
-                var decrypted = CryptoJS.AES.decrypt(_.first(_.values(items[hashkey][pos])), passphrase);
-                var data = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-                console.info(data);
-            } catch(e) {
-                alert('typestac: データ復号化に失敗しました。パスフレーズが間違っている可能性があります');
-                return;
-            }
-            restoreData(data);
+            var data = decryptInputData(items[keyhash][pos], passphrase);
+            restoreInputData(data);
             pos++;
             if (pos >= dataLength) {
                 pos = 0;
             }
+            return false;
         });
 
-        key('ctrl+shift+c', function(event, handler){
+        key('shift+c', function(event, handler){
             if (dataLength == 0) {
-                return;
+                return false;
             }
             try {
-                if (confirm('typestac: このフォームパターンのデータを全て削除しても良いですか？')) {
-                    chrome.storage.local.remove(hashkey, function() {
+                if (confirm('typd: このフォームパターンのデータを全て削除しても良いですか？')) {
+                    chrome.storage.local.remove(keyhash, function() {
                         if(chrome.extension.lastError !== undefined) { // failure
-                            console.error('typestac: chrome.extention.error');
-                            return;
+                            throw 'typd: chrome.extention.error';
                         }
                         chrome.runtime.sendMessage({length:0}, function(response) {});
                     });
                 }
             } catch(e) {
-                return;
+                alert('typd: データ削除に失敗しました。');
             }
+            return false;
         });
 
         $('form').on('submit', function() {
-            var data = gatherData();
+            var data = gatherInputData();
 
             if (JSON.stringify(data) == '{}') {
-                console.info('typestac: data == {}');
                 return true;
             }
             if (_.uniq(_.values(data)).toString() == [""].toString()) {
-                console.info('typestac: data == [""]');
                 return true;
             }
 
@@ -161,35 +115,52 @@ $(function() {
                 });
             }
             
-            chrome.storage.local.get([hashkey], function(items) {
+            chrome.storage.local.get([keyhash], function(items) {
                 if(chrome.extension.lastError !== undefined) { // failure
-                    return;
+                    throw 'typd: chrome.extention.error';
                 }
 
                 var datas = [];
-                var encrypted = '' + CryptoJS.AES.encrypt(JSON.stringify(data), passphrase);
-                var hashdata = CryptoJS.SHA256(JSON.stringify(_.sortBy(data, function(val, key) {
-                    return key;
-                }))).toString();
+                var encrypted = encryptInputData(data, passphrase);
+                var datahash = generateDatahash(data);
 
-                if (_.has(items, hashkey)) {
-                    datas = items[hashkey];
+                // 既存データを設置
+                if (_.has(items, keyhash)) {
+                    datas = items[keyhash];
                 }
+
                 var hashitem = {};
-                hashitem[hashdata] = encrypted;
-                var filterd = _.filter(datas, function(d) {
-                    return (hashdata != _.first(_.keys(d)));
-                });
-                filterd.unshift(hashitem);
-                items ={};
-                items[hashkey] = _.uniq(filterd);
-                chrome.storage.local.set(items, function() {
-                    if(chrome.extension.lastError !== undefined) { // failure
-                        console.error('typestac: chrome.extention.error');
-                        return;
-                    }
-                    console.info('typestac: Set data');
-                });
+                hashitem[datahash] = encrypted;
+                
+                var exists = _.filter(datas, function(d) {
+                    return (datahash == _.first(_.keys(d)));
+                }).length;
+                
+                if (exists > 0) {
+                    // 既に存在する場合はソートをして保存
+                    var filterd = _.filter(datas, function(d) {
+                        return (datahash != _.first(_.keys(d)));
+                    });
+                    filterd.unshift(hashitem);
+                    
+                    items ={};
+                    items[keyhash] = _.uniq(filterd);
+                    chrome.storage.local.set(items, function() {
+                        if(chrome.extension.lastError !== undefined) { // failure
+                            throw 'typd: chrome.extention.error';
+                        }
+                    });
+                } else {
+                    // 新規データ
+                    items ={};
+                    items['tmpkey'] = keyhash;
+                    items['tmpdata'] = hashitem;                    
+                    chrome.storage.local.set(items, function() {
+                        if(chrome.extension.lastError !== undefined) { // failure
+                            throw 'typd: chrome.extention.error';
+                        }
+                    });
+                }                
             });
 
             return true;

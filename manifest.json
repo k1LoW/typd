@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "typestac (仮:フォームの入力値を自動で保存してCtrl+Shift+iで補完できるやつ)",
-    "version": "0.2.1",
+    "name": "typd (仮:フォームの入力値を自動で保存してCtrl+rで補完できるやつ)",
+    "version": "0.3.1",
     "browser_action": {
         "default_icon": "off.png"
     },
@@ -18,6 +18,7 @@
             "js/aes.js",
             "js/sha256.js",
             "js/keymaster.js",
+            "js/pubsub.js",
             "js/background.js"
         ]
     }, 
@@ -31,7 +32,12 @@
                 "js/aes.js",
                 "js/sha256.js",
                 "js/keymaster.js",
+                "js/pubsub.js",
+                "js/inputlib.js",
                 "js/script.js"
+            ],
+            "css": [
+                "css/style.css"
             ]
         }
     ],
