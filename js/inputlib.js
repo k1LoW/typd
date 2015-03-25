@@ -168,3 +168,45 @@ function removeTmpdata() {
         }
     });
 }
+
+function restoreOptions() {
+    chrome.storage.local.get('options', function(items) {
+        var options = items['options'];
+        $('#passphrase').val(options['passphrase']);
+        $('#include-password').prop('checked', options['include-password']);
+    });
+}
+
+function saveOptions() {
+    $('#options-message').hide();
+    var options ={};
+    options['passphrase'] = $('#passphrase').val();
+    options['include-password'] = $('#include-password').prop('checked');
+    var items = {};
+    items['options'] = options;
+    chrome.storage.local.set(items, function() {
+        if(chrome.extension.lastError !== undefined) { // failure
+            throw 'typd: chrome.extention.error';
+        }
+        // success
+        $('#options-message').text('Save options').fadeIn();
+    });
+}
+
+function clearAllData() {
+    $('#options-message').hide();
+    chrome.storage.local.get(['enabled', 'options'], function(items) {
+        chrome.storage.local.clear(function() {
+            if(chrome.extension.lastError !== undefined) { // failure
+                throw 'typd: chrome.extention.error';
+            }
+            chrome.storage.local.set(items, function() {
+                if(chrome.extension.lastError !== undefined) { // failure
+                    throw 'typd: chrome.extention.error';
+                }
+                // success
+                $('#options-message').text('Clear all dataa').fadeIn();
+            });
+        });
+    });    
+}

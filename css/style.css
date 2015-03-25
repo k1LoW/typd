@@ -10,12 +10,14 @@
     font-size: 11px;
 }
 .typd-message {
-    margin: 8px 15px;
+    margin: 0px 15px;
 }
 .typd-message p{
+    float: left;
+    padding: 5px;
+    margin: 2px;
     font-size: 14px;
     display:inline-block;
-    padding-right: 5px;
     color: #333333;
 }
 .typd-btn {

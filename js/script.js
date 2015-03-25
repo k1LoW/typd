@@ -39,20 +39,19 @@ $(function() {
         if (items['tmpkey'] && items['tmpdata']) {
             var tmpkey = items['tmpkey'];
             var tmpdata = items['tmpdata'];
-            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>入力データを保存しますか？</p><button class="typd-btn typd-btn-save">保存する</button><button class="typd-btn typd-btn-cancel">キャンセル</button></div></div>');
+            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>typd: 入力データを保存しますか？</p><button class="typd-btn typd-btn-save">保存する</button><button class="typd-btn typd-btn-cancel">キャンセル</button></div></div>');
+            removeTmpdata();
             $('.typd-box').animate({
                 bottom:0
             }, function() {
                 var $box = $(this);
                 $('.typd-btn-save').on('click', function() {
                     setPrevdata(tmpkey, tmpdata);
-                    removeTmpdata();
                     $box.animate({bottom:-50}, function() {
                         $box.remove();
                     });
                 });
                 $('.typd-btn-cancel').on('click', function() {
-                    removeTmpdata();
                     $box.animate({bottom:-50}, function() {
                         $box.remove();
                     });
