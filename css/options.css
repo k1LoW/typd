@@ -1,0 +1,16 @@
+body {
+    padding: 10px;
+}
+.container {
+    overflow: auto;
+}
+button#save-options {
+    margin-top:10px;
+}
+#options-message {
+    color: white;
+    background-color: #007FB1;
+    padding: 8px;
+    border-radius: 4px;
+    display:none;
+}

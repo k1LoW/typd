@@ -169,11 +169,108 @@ function removeTmpdata() {
     });
 }
 
+function denyHost(host) {
+    chrome.storage.local.get('options', function(items) {
+        var options = items['options'];
+        if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+            options = setDefaultOptions();
+        }
+        var denyHosts = options['deny-hosts'];
+        if (denyHosts) {
+            denyHosts += "\n" + host;
+        } else {
+            denyHosts = host;
+        }
+        options['deny-hosts'] = denyHosts;
+        var setItems = {};
+        setItems['options'] = options;
+        chrome.storage.local.set(setItems, function() {
+            if(chrome.extension.lastError !== undefined) { // failure
+                throw 'typd: chrome.extention.error';
+            }
+        });
+    });
+}
+
+function allowHost(host) {
+    chrome.storage.local.get('options', function(items) {
+        var options = items['options'];
+        if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+            options = setDefaultOptions();
+        }
+        var allowHosts = options['allow-hosts'];
+        if (allowHosts) {
+            allowHosts += "\n" + host;
+        } else {
+            allowHosts = host;
+        }
+        options['allow-hosts'] = allowHosts;
+        var setItems = {};
+        setItems['options'] = options;
+        chrome.storage.local.set(setItems, function() {
+            if(chrome.extension.lastError !== undefined) { // failure
+                throw 'typd: chrome.extention.error';
+            }
+        });
+    });
+}
+
+function isAllowHost(allowHosts) {
+    var host = window.location.host;
+    if (!allowHosts) {
+        return false;
+    }
+    var allows = allowHosts.split(/\r\n|\r|\n|,/);
+    if (_.indexOf(allows, host) < 0) {
+        return false;
+    }
+    return true;
+}
+
+function isDenyHost(denyHosts) {
+    var host = window.location.host;
+    if (!denyHosts) {
+        return false;
+    }
+    var denys = denyHosts.split(/\r\n|\r|\n|,/);
+    if (_.indexOf(denys, host) < 0) {
+        return false;
+    }
+    return true;
+}
+
+/*
+ * options
+ * 
+ */
+function setDefaultOptions() {
+    var options ={};
+    options['passphrase'] = '';
+    options['include-password'] = false;
+    options['key-restore'] = 'shift+r';
+    options['key-clear'] = 'shift+c';
+    var items = {};
+    items['options'] = options;
+    chrome.storage.local.set(items, function() {
+        if(chrome.extension.lastError !== undefined) { // failure
+            throw 'typd: chrome.extention.error';
+        }
+    });
+    return options;
+}
+
 function restoreOptions() {
     chrome.storage.local.get('options', function(items) {
         var options = items['options'];
+        if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+            options = setDefaultOptions();
+        }
         $('#passphrase').val(options['passphrase']);
         $('#include-password').prop('checked', options['include-password']);
+        $('#key-restore').val(options['key-restore']);
+        $('#key-clear').val(options['key-clear']);
+        $('#deny-hosts').val(options['deny-hosts']);
+        $('#allow-hosts').val(options['allow-hosts']);
     });
 }
 
@@ -182,6 +279,10 @@ function saveOptions() {
     var options ={};
     options['passphrase'] = $('#passphrase').val();
     options['include-password'] = $('#include-password').prop('checked');
+    options['key-restore'] = $('#key-restore').val();
+    options['key-clear'] = $('#key-clear').val();
+    options['deny-hosts'] = $('#deny-hosts').val();
+    options['allow-hosts'] = $('#allow-hosts').val();
     var items = {};
     items['options'] = options;
     chrome.storage.local.set(items, function() {

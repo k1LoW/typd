@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "typd proto",
-    "version": "0.3.3",
+    "name": "typd: prototype",
+    "version": "0.4.6",
     "browser_action": {
         "default_icon": "off.png"
     },

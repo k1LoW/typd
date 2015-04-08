@@ -5,9 +5,16 @@ $(function() {
     // chrome.storage.local.getBytesInUse(null, function(byteInUse) {
     //     // 5,242,880 byte
     // });
-    
+
     var keyhash = generateKeyhash(gatherInputData());
-    chrome.storage.local.get(['enabled', 'options', 'tmpkey', 'tmpdata', keyhash], function(items) {
+    chrome.storage.local.get([
+        'enabled',
+        'options',
+        'tmpkey',
+        'tmpdata',
+        'tmphost',
+        keyhash
+    ], function(items) {
         if(chrome.extension.lastError !== undefined) { // failure
             throw 'typd: chrome.extention.error';
         }
@@ -19,6 +26,7 @@ $(function() {
             return;
         }
         if (!_.has(items, 'options')) {
+            setDefaultOptions();
             alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
             return;
         }
@@ -32,31 +40,53 @@ $(function() {
         }
 
         var passphrase = items['options']['passphrase'];
+        var allowHosts = items['options']['allow-hosts'];
+        var denyHosts = items['options']['deny-hosts'];
         var includePassword = items['options']['include-password'];
         var dataLength = 0;
         var pos = 0;
-        
-        if (items['tmpkey'] && items['tmpdata']) {
+
+        if (items['tmpkey'] && items['tmpdata'] && items['tmphost']) {
             var tmpkey = items['tmpkey'];
             var tmpdata = items['tmpdata'];
-            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>typd: 入力データを保存しますか？</p><button class="typd-btn typd-btn-save">保存する</button><button class="typd-btn typd-btn-cancel">キャンセル</button></div></div>');
+            var tmphost = items['tmphost'];
+            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>typd: 入力データを保存しますか？</p><button class="typd-btn typd-btn-save">入力データを保存する</button><button class="typd-btn typd-btn-cancel">この入力データは保存しない</button><button class="typd-btn typd-btn-allow-host">このサイトのデータは自動で保存する('+ tmphost +')</button><button class="typd-btn typd-btn-deny-host">このサイトのデータは保存しない('+ tmphost +')</button></div></div>');
             removeTmpdata();
-            $('.typd-box').animate({
-                bottom:0
-            }, function() {
-                var $box = $(this);
-                $('.typd-btn-save').on('click', function() {
-                    setPrevdata(tmpkey, tmpdata);
-                    $box.animate({bottom:-50}, function() {
-                        $box.remove();
+
+            if (isAllowHost(allowHosts)) {
+                setPrevdata(tmpkey, tmpdata);
+            } else {
+                
+                $('.typd-box').animate({
+                    bottom:0
+                }, function() {
+                    var $box = $(this);
+                    $('.typd-btn-save').on('click', function() {
+                        setPrevdata(tmpkey, tmpdata);
+                        $box.animate({bottom:-50}, function() {
+                            $box.remove();
+                        });
+                    });
+                    $('.typd-btn-cancel').on('click', function() {
+                        $box.animate({bottom:-50}, function() {
+                            $box.remove();
+                        });
+                    });
+                    $('.typd-btn-allow-host').on('click', function() {
+                        allowHost(tmphost);
+                        $box.animate({bottom:-50}, function() {
+                            $box.remove();
+                        });
+                    });
+                    $('.typd-btn-deny-host').on('click', function() {
+                        denyHost(tmphost);
+                        $box.animate({bottom:-50}, function() {
+                            $box.remove();
+                        });
                     });
                 });
-                $('.typd-btn-cancel').on('click', function() {
-                    $box.animate({bottom:-50}, function() {
-                        $box.remove();
-                    });
-                });
-            });
+
+            }
         }
         
         if (_.has(items, keyhash)) {
@@ -64,7 +94,7 @@ $(function() {
         }
         chrome.runtime.sendMessage({length:dataLength}, function(response) {});
 
-        key('shift+r', function(event, handler){
+        key(items['options']['key-restore'], function(event, handler){
             if (dataLength == 0) {
                 return false;
             }
@@ -77,7 +107,7 @@ $(function() {
             return false;
         });
 
-        key('shift+c', function(event, handler){
+        key(items['options']['key-clear'], function(event, handler){
             if (dataLength == 0) {
                 return false;
             }
@@ -97,6 +127,10 @@ $(function() {
         });
 
         $('form').on('submit', function() {
+            if (isDenyHost(denyHosts)) {
+                return true;
+            }
+            
             var data = gatherInputData();
 
             if (JSON.stringify(data) == '{}') {
@@ -111,7 +145,7 @@ $(function() {
                     data[name] = '';
                 });
             }
-            
+
             chrome.storage.local.get([keyhash], function(items) {
                 if(chrome.extension.lastError !== undefined) { // failure
                     throw 'typd: chrome.extention.error';
@@ -128,18 +162,18 @@ $(function() {
 
                 var hashitem = {};
                 hashitem[datahash] = encrypted;
-                
+
                 var exists = _.filter(datas, function(d) {
                     return (datahash == _.first(_.keys(d)));
                 }).length;
-                
+
                 if (exists > 0) {
                     // 既に存在する場合はソートをして保存
                     var filterd = _.filter(datas, function(d) {
                         return (datahash != _.first(_.keys(d)));
                     });
                     filterd.unshift(hashitem);
-                    
+
                     items ={};
                     items[keyhash] = _.uniq(filterd);
                     chrome.storage.local.set(items, function() {
@@ -151,13 +185,14 @@ $(function() {
                     // 新規データ
                     items ={};
                     items['tmpkey'] = keyhash;
-                    items['tmpdata'] = hashitem;                    
+                    items['tmpdata'] = hashitem;
+                    items['tmphost'] = window.location.host;
                     chrome.storage.local.set(items, function() {
                         if(chrome.extension.lastError !== undefined) { // failure
                             throw 'typd: chrome.extention.error';
                         }
                     });
-                }                
+                }
             });
 
             return true;

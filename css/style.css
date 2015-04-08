@@ -15,20 +15,27 @@
 .typd-message p{
     float: left;
     padding: 5px;
-    margin: 2px;
-    font-size: 14px;
+    margin: 4px;
+    font-size: 11px;
     display:inline-block;
-    color: #333333;
+    font-weight: bold;
+    color: #666666;
 }
 .typd-btn {
     cursor: pointer;
     display:inline-block;
-    width: 10em;
-    padding: 5px;
+    padding: 5px 10px;
     margin: 5px;
     color: white;
     background-color:#007AB7;
     border: 1px; solid #007AB7;
+}
+
+.typd-btn.typd-btn-allow-host,
+.typd-btn.typd-btn-deny-host
+{
+    background-color:#999999;
+    border: 1px; solid #999999;
 }
 .typd-btn:hover {
     opacity: 0.8;
