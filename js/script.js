@@ -8,7 +8,7 @@ $(function() {
 
     var keyhash = generateKeyhash(gatherInputData());
     chrome.storage.local.get([
-        'enabled',
+        'disabled',
         'options',
         'tmpkey',
         'tmpdata',
@@ -19,23 +19,23 @@ $(function() {
             throw 'typd: chrome.extention.error';
         }
 
-        if (!_.has(items, 'enabled')) {
+        if (!_.has(items, 'disabled')) {
             return;
         }
-        if (!items['enabled']) {
+        if (items['disabled']) {
             return;
         }
         if (!_.has(items, 'options')) {
             setDefaultOptions();
-            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
             return;
         }
         if (!_.has(items['options'], 'passphrase')) {
-            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
             return;
         }
         if (!items['options']['passphrase']) {
-            alert('typd: 設定>拡張機能でパスフレーズをセットしてください');
+            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
             return;
         }
 
@@ -194,7 +194,6 @@ $(function() {
                     });
                 }
             });
-
             return true;
         });
 

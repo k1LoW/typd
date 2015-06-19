@@ -9,19 +9,36 @@ var typePasswordNames = [];
  */
 function gatherInputData() {
     typePasswordNames = [];
-    var obj = $('input:visible, select:visible, textarea:visible').each(function() {
+    var obj = {};
+    $(':input:visible:not(:file)').each(function() {
         var $self = $(this);
+        var name = $self.attr('name');
+        if ('undefined' == typeof name) {
+            return;
+        }
+        var value = null;
+        if ($self.attr('type') == 'checkbox') {
+            value =  $self.prop('checked');
+        } else {
+            value =  $self.val();
+        }
+        
+        if (_.has(obj, name)) {
+            if (_.isArray(obj[name])) {
+                obj[name].push(value);
+            } else {
+                var tmp = obj[name];
+                obj[name] = [tmp, value];
+            }
+        } else {
+            obj[name] = value;
+        }
+        
         if ($self.attr('type') == 'password') {
             typePasswordNames.push($self.attr('name'));
         }
-    }).serializeObject();
-    $('input[type="checkbox"]:not(:checked):visible').each(function(){
-        var $self = $(this);
-        var name = $self.attr('name');
-        if (name) {
-            obj[name] = '';
-        }
     });
+
     return obj;
 }
 
@@ -296,7 +313,7 @@ function saveOptions() {
 
 function clearAllData() {
     $('#options-message').hide();
-    chrome.storage.local.get(['enabled', 'options'], function(items) {
+    chrome.storage.local.get(['disabled', 'options'], function(items) {
         chrome.storage.local.clear(function() {
             if(chrome.extension.lastError !== undefined) { // failure
                 throw 'typd: chrome.extention.error';
