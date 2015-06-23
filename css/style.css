@@ -31,7 +31,11 @@
     color: white !important;
     background-color:#007AB7 !important;
     border: 1px !important; solid #007AB7 !important;
+    border-radius: 0px !important;
     font-size: 11px !important;
+    font-weight: inherit !important;
+    text-transform: inherit !important;
+    vertical-align: inherit !important;
 }
 
 .typd-btn.typd-btn-allow-host,

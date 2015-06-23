@@ -128,7 +128,7 @@ function decryptInputData(encrypted, passphrase) {
         var decrypted = CryptoJS.AES.decrypt(_.first(_.values(encrypted)), passphrase);
         data = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
     } catch(e) {
-        alert('typd: データ復号化に失敗しました。パスフレーズが間違っている可能性があります');
+        alert(chrome.i18n.getMessage('decrypt_error'));
         return data;
     }    
     return data;
@@ -307,7 +307,7 @@ function saveOptions() {
             throw 'typd: chrome.extention.error';
         }
         // success
-        $('#options-message').text('Save options').fadeIn();
+        $('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
     });
 }
 
@@ -323,7 +323,7 @@ function clearAllData() {
                     throw 'typd: chrome.extention.error';
                 }
                 // success
-                $('#options-message').text('Clear all dataa').fadeIn();
+                $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
             });
         });
     });    

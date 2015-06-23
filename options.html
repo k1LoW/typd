@@ -9,39 +9,67 @@
   </head>
 
   <body>
+    <header>
+      <h1>typd options</h1>
+    </header>
     <div class="container">
       <div id="options-message"></div>
-      <h2>Passphrase</h2>
+      <h2>
+        <span class="text-passphrase"></span>
+      </h2>
       <div>
         <input id="passphrase" type="password" placeholder="Passphrase here" />
       </div>
-      <h2>Include type="password"</h2>
+      <h2>
+        <span class="text-include-data"></span>
+      </h2>
       <div>
-        <input id="include-password" type="checkbox" value="include" />
+        <label>
+          <input id="include-password" type="checkbox" value="include" />
+          <span class="text-include-type-password"></span>
+        </label>
       </div>
-      <h2>Keybind</h2>
+      <h2>
+        <span class="text-keybind"></span>
+      </h2>
       <div>
-        <h3>Restore input data</h3>
+        <h3>
+          <span class="text-restore-input-data"></span>
+        </h3>
         <input id="key-restore" type="text" placeholder="ex. shift+r"/>
       </div>
       <div>
-        <h3>Clear stored data</h3>
+        <h3>
+          <span class="text-clear-stored-data"></span>
+        </h3>
         <input id="key-clear" type="text" placeholder="ex. shift+c"/>
       </div>
-      <h2>Hosts</h2>
+      <h2>
+        <span class="text-hosts"></span>
+      </h2>
       <div>
-        <h3>Deny hosts</h3>
+        <h3>
+          <span class="text-deny-hosts"></span>
+        </h3>
         <textarea id="deny-hosts" placeholder="ex. facebook.com"></textarea>
       </div>
       <div>
-        <h3>Allow hosts</h3>
+        <h3>
+          <span class="text-allow-hosts"></span>
+        </h3>
         <textarea id="allow-hosts" placeholder="ex. localhost.dev"></textarea>
       </div>
 
-      <button id="save-options">Save options</button>
+      <button id="save-options">
+        <span class="text-save-options"></span>
+      </button>
       <hr>
-      <h2>Clear all data</h2>
-      <button id="clear-data">Clear all data</button>
+      <h2>
+        <span class="text-clear-all-data"></span>
+      </h2>
+      <button id="clear-data">
+        <span class="text-clear-all-data"></span>
+      </button>
     </div>
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/underscore-min.js"></script>

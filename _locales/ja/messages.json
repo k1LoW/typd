@@ -1,0 +1,86 @@
+{
+    "extName": {
+        "message": "typd"
+    },
+    "extDescription": {
+        "message": "Do you remember how many 'form values' you have typed in your life?"
+    },
+    "no_passphrase": {
+        "message": "typd: 設定 > 拡張機能でパスフレーズをセットしてください"
+    },
+    "confirm_clear_form_data": {
+        "message": "typd: このフォームパターンのデータを全て削除しても良いですか？"
+    },
+    "data_delete_error": {
+        "message": "typd: データ削除に失敗しました"
+    },
+    "confirm_save_this_form_data": {
+        "message": "入力データを保存しますか？"
+    },
+    "save_form_data": {
+        "message": "入力データを保存する"
+    },
+    "dont_save_form_data": {
+        "message": "この入力データは保存しない"
+    },
+    "save_form_data_on_host": {
+        "message": "このサイトのデータは自動で保存する($host$)",
+        "placeholders": {
+            "host": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
+    "dont_save_form_data_on_host": {
+        "message": "このサイトのデータは保存しない($host$)",
+        "placeholders": {
+            "host": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
+    "decrypt_error": {
+        "message": "'typd: データ復号化に失敗しました。パスフレーズが間違っている可能性があります'"
+    },
+    "save_options_complete": {
+        "message": "設定を保存しました"
+    },
+    "clear_all_data_complete": {
+        "message": "全てのデータを削除しました"
+    },
+    "passphrase": {
+        "message": "パスフレーズ"
+    },
+    "include_data": {
+        "message": "保存データ設定"
+    },
+    "include_type_password": {
+        "message": "type=passwordを保存データに含める"
+    },
+    "keybind": {
+        "message": "キーバインド設定"
+    },
+    "restore_input_data": {
+        "message": "入力データをリストアする"
+    },
+    "clear_stored_data": {
+        "message": "カレントページと同じフォームパターンの入力データをクリアする"
+    },
+    "hosts": {
+        "message": "ホスト設定"
+    },
+    "allow_hosts": {
+        "message": "自動保存許可ホスト"
+    },
+    "deny_hosts": {
+        "message": "保存拒否ホスト"
+    },
+    "save_options": {
+        "message": "設定を保存する"
+    },
+    "clear_all_data": {
+        "message": "全ての入力データをクリアする"
+    }
+}

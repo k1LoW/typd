@@ -27,15 +27,15 @@ $(function() {
         }
         if (!_.has(items, 'options')) {
             setDefaultOptions();
-            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
+            alert(chrome.i18n.getMessage('no_passphrase'));
             return;
         }
         if (!_.has(items['options'], 'passphrase')) {
-            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
+            alert(chrome.i18n.getMessage('no_passphrase'));
             return;
         }
         if (!items['options']['passphrase']) {
-            alert('typd: 設定 > 拡張機能でパスフレーズをセットしてください');
+            alert(chrome.i18n.getMessage('no_passphrase'));
             return;
         }
 
@@ -50,7 +50,18 @@ $(function() {
             var tmpkey = items['tmpkey'];
             var tmpdata = items['tmpdata'];
             var tmphost = items['tmphost'];
-            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>typd: 入力データを保存しますか？</p><button class="typd-btn typd-btn-save">入力データを保存する</button><button class="typd-btn typd-btn-cancel">この入力データは保存しない</button><button class="typd-btn typd-btn-allow-host">このサイトのデータは自動で保存する('+ tmphost +')</button><button class="typd-btn typd-btn-deny-host">このサイトのデータは保存しない('+ tmphost +')</button></div></div>');
+            $('body').prepend('<div class="typd-box"><div class="typd-message"><p>'
+                              + 'typd: ' 
+                              + chrome.i18n.getMessage('confirm_save_this_form_data')
+                              + '</p><button class="typd-btn typd-btn-save">'
+                              + chrome.i18n.getMessage('save_form_data')
+                              + '</button><button class="typd-btn typd-btn-cancel">'
+                              + chrome.i18n.getMessage('dont_save_form_data')
+                              + '</button><button class="typd-btn typd-btn-allow-host">'
+                              + chrome.i18n.getMessage('save_form_data_on_host', tmphost)
+                              + '</button><button class="typd-btn typd-btn-deny-host">'
+                              + chrome.i18n.getMessage('dont_save_form_data_on_host', tmphost)
+                              + '</button></div></div>');
             removeTmpdata();
 
             if (isAllowHost(allowHosts)) {
@@ -112,7 +123,7 @@ $(function() {
                 return false;
             }
             try {
-                if (confirm('typd: このフォームパターンのデータを全て削除しても良いですか？')) {
+                if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
                     chrome.storage.local.remove(keyhash, function() {
                         if(chrome.extension.lastError !== undefined) { // failure
                             throw 'typd: chrome.extention.error';
@@ -121,7 +132,7 @@ $(function() {
                     });
                 }
             } catch(e) {
-                alert('typd: データ削除に失敗しました。');
+                alert(chrome.i18n.getMessage('data_delete_error'));
             }
             return false;
         });
