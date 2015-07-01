@@ -3,7 +3,7 @@
         "message": "typd"
     },
     "extDescription": {
-        "message": "Do you remember how many 'form values' you have typed in your life?"
+        "message": "お前は今まで入力したフォームの値を覚えているのか?"
     },
     "no_passphrase": {
         "message": "typd: 設定 > 拡張機能でパスフレーズをセットしてください"
@@ -24,7 +24,7 @@
         "message": "この入力データは保存しない"
     },
     "save_form_data_on_host": {
-        "message": "このサイトのデータは自動で保存する($host$)",
+        "message": "このサイトのデータは自動で保存する( $host$ )",
         "placeholders": {
             "host": {
                 "content": "$1",
@@ -33,7 +33,7 @@
         }
     },
     "dont_save_form_data_on_host": {
-        "message": "このサイトのデータは保存しない($host$)",
+        "message": "このサイトのデータは保存しない( $host$ )",
         "placeholders": {
             "host": {
                 "content": "$1",
@@ -53,8 +53,14 @@
     "passphrase": {
         "message": "パスフレーズ"
     },
+    "passphrase_description": {
+        "message": "保存データの暗号化に利用します"
+    },
     "include_data": {
         "message": "保存データ設定"
+    },
+    "include_data_description": {
+        "message": "保存データに含むデータを設定します"
     },
     "include_type_password": {
         "message": "type=passwordを保存データに含める"
@@ -65,8 +71,14 @@
     "restore_input_data": {
         "message": "入力データをリストアする"
     },
+    "restore_input_data_description": {
+        "message": "保存データでフォームをリストアします。連続して押すと過去の保存データでフォームをリストアします"
+    },
     "clear_stored_data": {
         "message": "カレントページと同じフォームパターンの入力データをクリアする"
+    },
+    "clear_stored_data_description": {
+        "message": "カレントページと同じフォームパターンの入力データを全てクリアする"
     },
     "hosts": {
         "message": "ホスト設定"
@@ -74,13 +86,19 @@
     "allow_hosts": {
         "message": "自動保存許可ホスト"
     },
+    "allow_hosts_description": {
+        "message": "ここに登録されているホストは、確認メッセージなしで自動で入力データを保存します"
+    },
     "deny_hosts": {
         "message": "保存拒否ホスト"
+    },
+    "deny_hosts_description": {
+        "message": "ここに登録されているホストは、入力データを保存するための確認メッセージを表示しません"
     },
     "save_options": {
         "message": "設定を保存する"
     },
-    "clear_all_data": {
+    "clear_all_data": {        
         "message": "全ての入力データをクリアする"
     }
 }

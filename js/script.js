@@ -5,7 +5,7 @@ $(function() {
     // chrome.storage.local.getBytesInUse(null, function(byteInUse) {
     //     // 5,242,880 byte
     // });
-
+    
     var keyhash = generateKeyhash(gatherInputData());
     chrome.storage.local.get([
         'disabled',
@@ -105,6 +105,15 @@ $(function() {
         }
         chrome.runtime.sendMessage({length:dataLength}, function(response) {});
 
+        key.filter = function(event){
+            var tagName = (event.target || event.srcElement).tagName;
+            if (event.srcElement.contentEditable == 'true') {
+                // ex. Gmailの返信
+                return false;
+            }
+            return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+        };
+        
         key(items['options']['key-restore'], function(event, handler){
             if (dataLength == 0) {
                 return false;

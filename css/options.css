@@ -51,12 +51,24 @@ button#save-options {
     border-radius: 4px;
     display:none;
 }
+.option-description {
+    font-size: 10px;
+    padding: 3px;
+    margin: 2px;
+    background-color: #EFEFEF;
+}
 
 .text-passphrase:before {
     content: '__MSG_passphrase__';
 }
+.text-passphrase-description:before {
+    content: '__MSG_passphrase_description__';
+}
 .text-include-data:before {
     content: '__MSG_include_data__';
+}
+.text-include-data-description:before {
+    content: '__MSG_include_data_description__';
 }
 .text-include-type-password:before {
     content: '__MSG_include_type_password__';
@@ -67,8 +79,14 @@ button#save-options {
 .text-restore-input-data:before {
     content: '__MSG_restore_input_data__';
 }
+.text-restore-input-data-description:before {
+    content: '__MSG_restore_input_data_description__';
+}
 .text-clear-stored-data:before {
     content: '__MSG_clear_stored_data__';
+}
+.text-clear-stored-data-description:before {
+    content: '__MSG_clear_stored_data_description__';
 }
 .text-hosts:before {
     content: '__MSG_hosts__';
@@ -76,12 +94,21 @@ button#save-options {
 .text-allow-hosts:before {
     content: '__MSG_allow_hosts__';
 }
+.text-allow-hosts-description:before {
+    content: '__MSG_allow_hosts_description__';
+}
 .text-deny-hosts:before {
     content: '__MSG_deny_hosts__';
+}
+.text-deny-hosts-description:before {
+    content: '__MSG_deny_hosts_description__';
 }
 .text-save-options:before {
     content: '__MSG_save_options__';
 }
 .text-clear-all-data:before {
     content: '__MSG_clear_all_data__';
+}
+.text-clear-all-data-description:before {
+    content: '__MSG_clear_all_data_description__';
 }
