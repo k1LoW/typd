@@ -19,8 +19,14 @@ function gatherInputData() {
         var value = null;
         if ($self.attr('type') == 'checkbox') {
             value =  $self.prop('checked');
+        } else if ($self.attr('type') == 'radio') {
+            if ($self.prop('checked')) {
+                value = $self.val();
+            } else {
+                return;
+            }
         } else {
-            value =  $self.val();
+            value = $self.val();
         }
         
         if (_.has(obj, name)) {
@@ -38,7 +44,6 @@ function gatherInputData() {
             typePasswordNames.push($self.attr('name'));
         }
     });
-
     return obj;
 }
 

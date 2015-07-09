@@ -152,7 +152,7 @@ $(function() {
             }
             
             var data = gatherInputData();
-
+            
             if (JSON.stringify(data) == '{}') {
                 return true;
             }
