@@ -29,6 +29,9 @@
     padding: 5px 10px !important;
     margin: 5px !important;
     color: white !important;
+    background-image:inherit !important;
+    box-shadow:inherit !important;
+    text-shadow:inherit !important;
     background-color:#007AB7 !important;
     border: 1px !important; solid #007AB7 !important;
     border-radius: 0px !important;
