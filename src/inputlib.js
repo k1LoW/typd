@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var _ = require('underscore');
 var $ = require('jquery');
 var CryptoJS = require("crypto-js");
 
@@ -14,7 +14,7 @@ var typePasswordNames = [];
 function gatherInputData() {
   typePasswordNames = [];
   var obj = {};
-  $(':input:visible:not(:file)').each(function() {
+  $('input:visible:not(:file),select:visible').each(function() {
     var $self = $(this);
     var name = $self.attr('name');
     if ('undefined' == typeof name) {
@@ -148,8 +148,27 @@ function decryptInputData(encrypted, passphrase) {
  * ページのkeyhashを作成
  *
  */
-function generateKeyhash(data) {
-  return CryptoJS.SHA256(JSON.stringify(_.keys(data).sort())).toString();
+function generateKeyhash() {
+  var data = gatherInputData();
+  var keys = _.keys(data).sort();
+  var keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
+  var keymap = {};
+  chrome.storage.local.get([
+    'keymap',
+  ], function(items) {
+    if (_.has(items, 'keymap')) {
+      keymap = items['keymap'];
+    }
+    keymap[keyhash] = keys;
+    items['keymap'] = keymap;
+    chrome.storage.local.set(items, function() {
+      if(chrome.extension.lastError !== undefined) { // failure
+        throw 'typd: chrome.extention.error';
+      }
+    });
+  });
+  
+  return keyhash;
 }
 
 /*
@@ -320,6 +339,39 @@ function saveOptions() {
   });
 }
 
+function clearDataByKeyhash(keyhash) {
+  try {
+    if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
+      chrome.storage.local.remove(keyhash, function() {
+        if(chrome.extension.lastError !== undefined) { // failure
+          throw 'typd: chrome.extention.error';
+        }
+        chrome.runtime.sendMessage({length:0}, function(response) {});
+      });
+      chrome.storage.local.get([
+        'keymap',
+      ], function(items) {
+        var keymap = {};
+        if (_.has(items, 'keymap')) {
+          keymap = items['keymap'];
+        }
+        if (!_.has(keymap, keyhash)) {
+          return;
+        }
+        delete keymap[keyhash];
+        items['keymap'] = keymap;
+        chrome.storage.local.set(items, function() {
+          if(chrome.extension.lastError !== undefined) { // failure
+            throw 'typd: chrome.extention.error';
+          }
+        });
+      });
+    }
+  } catch(e) {
+    alert(chrome.i18n.getMessage('data_delete_error'));
+  }
+}
+
 function clearAllData() {
   $('#options-message').hide();
   chrome.storage.local.get(['disabled', 'options'], function(items) {
@@ -355,5 +407,6 @@ module.exports = {
   setDefaultOptions: setDefaultOptions,
   restoreOptions: restoreOptions,
   saveOptions: saveOptions,
+  clearDataByKeyhash: clearDataByKeyhash,
   clearAllData: clearAllData
 };

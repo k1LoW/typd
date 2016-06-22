@@ -1,114 +1,144 @@
 @charset "UTF-8";
 
 body {
-    padding: 0px;
-    margin: 0px;
-    font-size: 12px;
+  padding: 0px;
+  margin: 0px;
+  font-size: 12px;
 }
 header {
-    color: white;
-    background-color: #007FB1;
-    padding: 5px 10px;
-    text-align: right;
+  color: white;
+  background-color: #007FB1;
+  padding: 5px 10px;
+  text-align: right;
 }
 .container {
-    width: 50%;
-    display: block;
-    margin: 20px auto;
+  width: 50%;
+  display: block;
+  margin: 20px auto;
+}
+.container-table {
+  width: 90%;
+  display: block;
+  margin: 20px auto;
 }
 h1 {
-    font-size: 16px;
-    font-weight: normal;
-    margin: 5px;
+  font-size: 16px;
+  font-weight: normal;
+  margin: 5px;
 }
 h2 {
-    font-size: 14px;
-    border-left: 5px solid #007FB1;
-    padding-left: 5px;
+  font-size: 14px;
+  border-left: 5px solid #007FB1;
+  padding-left: 5px;
 }
 input[type=text], input[type=password], textarea {
-    font-size: 12px;
-    padding: 5px;
+  font-size: 12px;
+  padding: 5px;
 }
-button {
-    cursor: pointer;
-    border: 1px solid #007FB1;
-    color: white;
-    background-color: #007FB1;
-    padding: 5px 10px;
+table {
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 5px;
+  word-wrap: break-word;
+  word-break:break-all;
+}
+button, .btn {
+  cursor: pointer;
+  border: 1px solid #007FB1;
+  color: white;
+  background-color: #007FB1;
+  padding: 5px 10px;
+  text-decoration: none;
+  display: inline-block;
 }
 button:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 button#save-options {
-    margin-top:10px;
+  margin-top:10px;
+}
+button#clear-data {
+  border: 1px solid #C7243A;
+  background-color: #C7243A;
 }
 #options-message {
-    color: white;
-    background-color: #007FB1;
-    padding: 8px;
-    border-radius: 4px;
-    display:none;
+  color: white;
+  background-color: #007FB1;
+  padding: 8px;
+  border-radius: 4px;
+  display:none;
 }
 .option-description {
-    font-size: 10px;
-    padding: 3px;
-    margin: 2px;
-    background-color: #EFEFEF;
+  font-size: 10px;
+  padding: 3px;
+  margin: 2px;
+  background-color: #EFEFEF;
 }
 
+.text-used-storage:before {
+  content: '__MSG_used_storage__';
+}
 .text-passphrase:before {
-    content: '__MSG_passphrase__';
+  content: '__MSG_passphrase__';
 }
 .text-passphrase-description:before {
-    content: '__MSG_passphrase_description__';
+  content: '__MSG_passphrase_description__';
 }
 .text-include-data:before {
-    content: '__MSG_include_data__';
+  content: '__MSG_include_data__';
 }
 .text-include-data-description:before {
-    content: '__MSG_include_data_description__';
+  content: '__MSG_include_data_description__';
 }
 .text-include-type-password:before {
-    content: '__MSG_include_type_password__';
+  content: '__MSG_include_type_password__';
 }
 .text-keybind:before {
-    content: '__MSG_keybind__';
+  content: '__MSG_keybind__';
 }
 .text-restore-input-data:before {
-    content: '__MSG_restore_input_data__';
+  content: '__MSG_restore_input_data__';
 }
 .text-restore-input-data-description:before {
-    content: '__MSG_restore_input_data_description__';
+  content: '__MSG_restore_input_data_description__';
 }
 .text-clear-stored-data:before {
-    content: '__MSG_clear_stored_data__';
+  content: '__MSG_clear_stored_data__';
 }
 .text-clear-stored-data-description:before {
-    content: '__MSG_clear_stored_data_description__';
+  content: '__MSG_clear_stored_data_description__';
 }
 .text-hosts:before {
-    content: '__MSG_hosts__';
+  content: '__MSG_hosts__';
 }
 .text-allow-hosts:before {
-    content: '__MSG_allow_hosts__';
+  content: '__MSG_allow_hosts__';
 }
 .text-allow-hosts-description:before {
-    content: '__MSG_allow_hosts_description__';
+  content: '__MSG_allow_hosts_description__';
 }
 .text-deny-hosts:before {
-    content: '__MSG_deny_hosts__';
+  content: '__MSG_deny_hosts__';
 }
 .text-deny-hosts-description:before {
-    content: '__MSG_deny_hosts_description__';
+  content: '__MSG_deny_hosts_description__';
 }
 .text-save-options:before {
-    content: '__MSG_save_options__';
+  content: '__MSG_save_options__';
+}
+.text-saved-data:before {
+  content: '__MSG_saved_data__';
+}
+.text-clear-data:before {
+  content: '__MSG_clear_data__';
 }
 .text-clear-all-data:before {
-    content: '__MSG_clear_all_data__';
+  content: '__MSG_clear_all_data__';
 }
 .text-clear-all-data-description:before {
-    content: '__MSG_clear_all_data_description__';
+  content: '__MSG_clear_all_data_description__';
 }

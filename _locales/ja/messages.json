@@ -1,104 +1,113 @@
 {
-    "extName": {
-        "message": "typd"
-    },
-    "extDescription": {
-        "message": "お前は今まで入力したフォームの値を覚えているのか?"
-    },
-    "no_passphrase": {
-        "message": "typd: 設定 > 拡張機能でパスフレーズをセットしてください"
-    },
-    "confirm_clear_form_data": {
-        "message": "typd: このフォームパターンのデータを全て削除しても良いですか？"
-    },
-    "data_delete_error": {
-        "message": "typd: データ削除に失敗しました"
-    },
-    "confirm_save_this_form_data": {
-        "message": "入力データを保存しますか？"
-    },
-    "save_form_data": {
-        "message": "入力データを保存する"
-    },
-    "dont_save_form_data": {
-        "message": "この入力データは保存しない"
-    },
-    "save_form_data_on_host": {
-        "message": "このサイトのデータは自動で保存する( $host$ )",
-        "placeholders": {
-            "host": {
-                "content": "$1",
-                "example": "example.com"
-            }
-        }
-    },
-    "dont_save_form_data_on_host": {
-        "message": "このサイトのデータは保存しない( $host$ )",
-        "placeholders": {
-            "host": {
-                "content": "$1",
-                "example": "example.com"
-            }
-        }
-    },
-    "decrypt_error": {
-        "message": "'typd: データ復号化に失敗しました。パスフレーズが間違っている可能性があります'"
-    },
-    "save_options_complete": {
-        "message": "設定を保存しました"
-    },
-    "clear_all_data_complete": {
-        "message": "全てのデータを削除しました"
-    },
-    "passphrase": {
-        "message": "パスフレーズ"
-    },
-    "passphrase_description": {
-        "message": "保存データの暗号化に利用します"
-    },
-    "include_data": {
-        "message": "保存データ設定"
-    },
-    "include_data_description": {
-        "message": "保存データに含むデータを設定します"
-    },
-    "include_type_password": {
-        "message": "type=passwordを保存データに含める"
-    },
-    "keybind": {
-        "message": "キーバインド設定"
-    },
-    "restore_input_data": {
-        "message": "入力データをリストアする"
-    },
-    "restore_input_data_description": {
-        "message": "保存データでフォームをリストアします。連続して押すと過去の保存データでフォームをリストアします。`shift`、`option`、`alt`、`ctrl`、`control`、`command`のキーをサポートしています。`shift+r` がデフォルトのキーバインドになります"
-    },
-    "clear_stored_data": {
-        "message": "カレントページと同じフォームパターンの入力データをクリアしまう"
-    },
-    "clear_stored_data_description": {
-        "message": "カレントページと同じフォームパターンの入力データを全てクリアします"
-    },
-    "hosts": {
-        "message": "ホスト設定"
-    },
-    "allow_hosts": {
-        "message": "自動保存許可ホスト"
-    },
-    "allow_hosts_description": {
-        "message": "ここに登録されているホストは、確認メッセージなしで自動で入力データを保存します"
-    },
-    "deny_hosts": {
-        "message": "保存拒否ホスト"
-    },
-    "deny_hosts_description": {
-        "message": "ここに登録されているホストは、入力データを保存するための確認メッセージを表示しません"
-    },
-    "save_options": {
-        "message": "設定を保存する"
-    },
-    "clear_all_data": {        
-        "message": "全ての入力データをクリアする"
+  "extName": {
+    "message": "typd"
+  },
+  "extDescription": {
+    "message": "お前は今まで入力したフォームの値を覚えているのか?"
+  },
+  "no_passphrase": {
+    "message": "typd: 設定 > 拡張機能でパスフレーズをセットしてください"
+  },
+  "confirm_clear_form_data": {
+    "message": "typd: このフォームパターンのデータを全て削除しても良いですか？"
+  },
+  "data_delete_error": {
+    "message": "typd: データ削除に失敗しました"
+  },
+  "confirm_save_this_form_data": {
+    "message": "入力データを保存しますか？"
+  },
+  "save_form_data": {
+    "message": "入力データを保存する"
+  },
+  "dont_save_form_data": {
+    "message": "この入力データは保存しない"
+  },
+  "save_form_data_on_host": {
+    "message": "このサイトのデータは自動で保存する( $host$ )",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "example.com"
+      }
     }
+  },
+  "dont_save_form_data_on_host": {
+    "message": "このサイトのデータは保存しない( $host$ )",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "decrypt_error": {
+    "message": "'typd: データ復号化に失敗しました。パスフレーズが間違っている可能性があります'"
+  },
+  "save_options_complete": {
+    "message": "設定を保存しました"
+  },
+  "clear_all_data_complete": {
+    "message": "全てのデータを削除しました"
+  },
+  "used_storage": {
+    "message": "使用済みストレージ"
+  },  
+  "passphrase": {
+    "message": "パスフレーズ"
+  },
+  "passphrase_description": {
+    "message": "保存データの暗号化に利用します"
+  },
+  "include_data": {
+    "message": "保存データ設定"
+  },
+  "include_data_description": {
+    "message": "保存データに含むデータを設定します"
+  },
+  "include_type_password": {
+    "message": "type=passwordを保存データに含める"
+  },
+  "keybind": {
+    "message": "キーバインド設定"
+  },
+  "restore_input_data": {
+    "message": "入力データをリストアする"
+  },
+  "restore_input_data_description": {
+    "message": "保存データでフォームをリストアします。連続して押すと過去の保存データでフォームをリストアします。`shift`、`option`、`alt`、`ctrl`、`control`、`command`のキーをサポートしています。`shift+r` がデフォルトのキーバインドになります"
+  },
+  "clear_stored_data": {
+    "message": "カレントページと同じフォームパターンの入力データをクリアしまう"
+  },
+  "clear_stored_data_description": {
+    "message": "カレントページと同じフォームパターンの入力データを全てクリアします"
+  },
+  "hosts": {
+    "message": "ホスト設定"
+  },
+  "allow_hosts": {
+    "message": "自動保存許可ホスト"
+  },
+  "allow_hosts_description": {
+    "message": "ここに登録されているホストは、確認メッセージなしで自動で入力データを保存します"
+  },
+  "deny_hosts": {
+    "message": "保存拒否ホスト"
+  },
+  "deny_hosts_description": {
+    "message": "ここに登録されているホストは、入力データを保存するための確認メッセージを表示しません"
+  },
+  "save_options": {
+    "message": "設定を保存する"
+  },
+  "saved_data": {        
+    "message": "保存された入力データ"
+  },
+  "clear_all_data": {        
+    "message": "全ての保存された入力データをクリアする"
+  },
+  "clear_data": {
+    "message": "✕"
+  }
 }

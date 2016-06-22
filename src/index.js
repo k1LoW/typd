@@ -1,16 +1,12 @@
 // pubsub
 var pubsub = require('pubsubjs').create();
-var _ = require('lodash');
+var _ = require('underscore');
 var $ = require('jquery');
 var key = require('keymaster');
 var lib = require('./inputlib');
 
 $(function() {
-  // chrome.storage.local.getBytesInUse(null, function(byteInUse) {
-  //     // 5,242,880 byte
-  // });
-  
-  var keyhash = lib.generateKeyhash(lib.gatherInputData());
+  var keyhash = lib.generateKeyhash();
   chrome.storage.local.get([
     'disabled',
     'options',
@@ -135,18 +131,7 @@ $(function() {
       if (dataLength == 0) {
         return false;
       }
-      try {
-        if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
-          chrome.storage.local.remove(keyhash, function() {
-            if(chrome.extension.lastError !== undefined) { // failure
-              throw 'typd: chrome.extention.error';
-            }
-            chrome.runtime.sendMessage({length:0}, function(response) {});
-          });
-        }
-      } catch(e) {
-        alert(chrome.i18n.getMessage('data_delete_error'));
-      }
+      lib.clearDataByKeyhash(keyhash);
       return false;
     });
 

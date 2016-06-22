@@ -3,7 +3,8 @@ module.exports = {
   entry: {
     index: __dirname + '/src/index.js',
     background: __dirname + '/src/background.js',
-    options: __dirname + '/src/options.js'
+    options: __dirname + '/src/options.js',
+    keymap: __dirname + '/src/keymap.js'
   },
   output: {
     path: __dirname + "/dist",

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>typd options</title>
-    <link href="css/options.css" rel="stylesheet" />
+    <title>typd options</title> <link href="css/options.css"
+    rel="stylesheet" />
     <style>
 
     </style>
@@ -15,13 +15,18 @@
     <div class="container">
       <div id="options-message"></div>
       <h2>
+        <span class="text-used-storage"></span>
+      </h2>
+      <span id="used-storage-size"></span>
+      <h2>
         <span class="text-passphrase"></span>
       </h2>
       <div class="option-description">
         <span class="text-passphrase-description"></span>
       </div>
       <div>
-        <input id="passphrase" type="password" placeholder="Passphrase here" />
+        <input id="passphrase" type="password" placeholder="Passphrase
+        here" />
       </div>
       <h2>
         <span class="text-include-data"></span>
@@ -31,7 +36,8 @@
       </div>
       <div>
         <label>
-          <input id="include-password" type="checkbox" value="include" />
+          <input id="include-password" type="checkbox" value="include"
+          />
           <span class="text-include-type-password"></span>
         </label>
       </div>
@@ -45,7 +51,8 @@
         <div class="option-description">
           <span class="text-restore-input-data-description"></span>
         </div>
-        <input id="key-restore" type="text" placeholder="ex. shift+r"/>
+        <input id="key-restore" type="text"
+        placeholder="ex. shift+r"/>
       </div>
       <div>
         <h3>
@@ -66,7 +73,8 @@
         <div class="option-description">
           <span class="text-deny-hosts-description"></span>
         </div>
-        <textarea id="deny-hosts" placeholder="ex. facebook.com"></textarea>
+        <textarea id="deny-hosts"
+        placeholder="ex. facebook.com"></textarea>
       </div>
       <div>
         <h3>
@@ -75,7 +83,8 @@
         <div class="option-description">
           <span class="text-allow-hosts-description"></span>
         </div>
-        <textarea id="allow-hosts" placeholder="ex. localhost.dev"></textarea>
+        <textarea id="allow-hosts"
+        placeholder="ex. localhost.dev"></textarea>
       </div>
 
       <button id="save-options">
@@ -83,8 +92,11 @@
       </button>
       <hr>
       <h2>
-        <span class="text-clear-all-data"></span>
+        <span class="text-saved-data"></span>
       </h2>
+      <a class="btn" href="keymap.html">
+        <span class="text-saved-data"></span>
+      </a>
       <button id="clear-data">
         <span class="text-clear-all-data"></span>
       </button>

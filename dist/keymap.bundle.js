@@ -44,6 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var _ = __webpack_require__(1);
 	var $ = __webpack_require__(3);
 	var lib = __webpack_require__(5);
 
@@ -51,21 +52,23 @@
 	  chrome.storage.local.getBytesInUse(null, function (byteInUse) {
 	    $('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' bytes )');
 	  });
+	});
 
-	  // Restore options
-	  lib.restoreOptions();
-
-	  // Save options
-	  $('#save-options').on('click', function () {
-	    lib.saveOptions();
+	var keymap = {};
+	chrome.storage.local.get(['keymap'], function (items) {
+	  if (_.has(items, 'keymap')) {
+	    keymap = items['keymap'];
+	  }
+	  var $tbody = $('#table-keymap tbody');
+	  _.each(keymap, function (v, hash) {
+	    var tr = '<tr><td>' + '<button class="clear-data" data-keyhash="' + hash + '">' + '<span class="text-clear-data"></span>' + '</button>' + '</td><td>' + v.toString() + '</td></tr>';
+	    $tbody.append(tr);
 	  });
-
-	  $('#clear-data').on('click', function () {
-	    lib.clearAllData();
-	  });
-
-	  $('#options-message').on('click', function () {
-	    $(this).fadeOut();
+	  $('.clear-data').on('click', function () {
+	    var $self = $(this);
+	    var keyhash = $self.data('keyhash');
+	    lib.clearDataByKeyhash(keyhash);
+	    location.reload();
 	  });
 	});
 
