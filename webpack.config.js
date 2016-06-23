@@ -15,7 +15,10 @@ module.exports = {
       {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loader: 'babel'
+        loader: 'babel',
+        query:{
+          presets: ['es2015']
+        }
       },
       {test: /\.css$/, loader: 'style!css?sourceMap'},
       {test: /\.json$/, loader: 'json-loader'},

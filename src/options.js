@@ -1,8 +1,8 @@
-var $ = require('jquery');
-var lib = require('./inputlib');
+import $ from 'jquery';
+import lib from './inputlib';
 
-$(function() {
-  chrome.storage.local.getBytesInUse(null, function(byteInUse) {
+$(() => {
+  chrome.storage.local.getBytesInUse(null, (byteInUse) => {
     $('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' bytes )');
   });
   
@@ -10,15 +10,15 @@ $(function() {
   lib.restoreOptions();
 
   // Save options
-  $('#save-options').on('click', function () {
+  $('#save-options').on('click', () => {
     lib.saveOptions();
   });
 
-  $('#clear-data').on('click', function () {
+  $('#clear-data').on('click', () => {
     lib.clearAllData();
   });
   
-  $('#options-message').on('click', function() {
+  $('#options-message').on('click', () => {
     $(this).fadeOut();
   });
 });

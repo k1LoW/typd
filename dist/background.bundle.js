@@ -44,7 +44,17 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(1);
+	'use strict';
+
+	var _underscore = __webpack_require__(1);
+
+	var _underscore2 = _interopRequireDefault(_underscore);
+
+	var _storage = __webpack_require__(2);
+
+	var _storage2 = _interopRequireDefault(_storage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function toggleIcon(disabled) {
 	  if (disabled) {
@@ -68,44 +78,33 @@
 	  sendResponse({});
 	});
 
-	chrome.storage.local.get(['disabled'], function (items) {
-	  if (chrome.extension.lastError !== undefined) {
-	    // failure
-	    throw 'typd: chrome.extention.error';
+	_storage2.default.get(['disabled']).then(function (items) {
+	  if (_underscore2.default.has(items, 'disabled')) {
+	    toggleIcon(items['disabled']);
 	  } else {
-	    // success
-	    if (_.has(items, 'disabled')) {
-	      toggleIcon(items['disabled']);
-	    } else {
-	      toggleIcon(false);
-	    }
+	    toggleIcon(false);
 	  }
+	}).catch(function (err) {
+	  console.warn(err);
 	});
 
 	chrome.browserAction.onClicked.addListener(function (tab) {
-	  chrome.storage.local.get(['disabled'], function (items) {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    } else {
-	      // success
-	      var toggle = false;
-	      if (_.has(items, 'disabled')) {
-	        toggle = items['disabled'];
-	      }
-	      toggle = !toggle;
-	      var updates = {};
-	      updates['disabled'] = toggle;
-	      chrome.storage.local.set(updates, function () {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
-	        } else {
-	          // success
-	        }
-	      });
-	      toggleIcon(toggle);
+	  _storage2.default.get(['disabled']).then(function (items) {
+	    var toggle = false;
+	    if (_underscore2.default.has(items, 'disabled')) {
+	      toggle = items['disabled'];
 	    }
+	    toggle = !toggle;
+	    var updates = {};
+	    updates['disabled'] = toggle;
+	    return Promise.all([new Promise(function (resolve, reject) {
+	      resolve(toggle);
+	    }), _storage2.default.set(updates)]);
+	  }).then(function (res) {
+	    var toggle = res[0];
+	    toggleIcon(toggle);
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	});
 
@@ -1662,6 +1661,61 @@
 	  }
 	}.call(this));
 
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var storage = {
+	  get: function get(keys) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.get(keys, function (items) {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(items);
+	      });
+	    });
+	  },
+	  set: function set(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.set(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  remove: function remove(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.remove(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  clear: function clear() {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.clear(function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  }
+	};
+
+	module.exports = storage;
 
 /***/ }
 /******/ ]);

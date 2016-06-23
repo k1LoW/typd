@@ -44,96 +44,83 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// pubsub
-	var pubsub = __webpack_require__(2).create();
-	var _ = __webpack_require__(1);
-	var $ = __webpack_require__(3);
-	var key = __webpack_require__(4);
-	var lib = __webpack_require__(5);
+	'use strict';
 
-	$(function () {
-	  var keyhash = lib.generateKeyhash();
-	  chrome.storage.local.get(['disabled', 'options', 'tmpkey', 'tmpdata', 'tmphost', keyhash], function (items) {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
+	var _underscore = __webpack_require__(1);
 
-	    if (!_.has(items, 'disabled')) {
-	      return;
-	    }
-	    if (items['disabled']) {
-	      return;
-	    }
-	    if (!_.has(items, 'options')) {
-	      lib.setDefaultOptions();
-	      alert(chrome.i18n.getMessage('no_passphrase'));
-	      return;
-	    }
-	    if (!_.has(items['options'], 'passphrase')) {
-	      alert(chrome.i18n.getMessage('no_passphrase'));
-	      return;
-	    }
-	    if (!items['options']['passphrase']) {
-	      alert(chrome.i18n.getMessage('no_passphrase'));
-	      return;
-	    }
+	var _underscore2 = _interopRequireDefault(_underscore);
 
+	var _jquery = __webpack_require__(3);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _keymaster = __webpack_require__(4);
+
+	var _keymaster2 = _interopRequireDefault(_keymaster);
+
+	var _inputlib = __webpack_require__(5);
+
+	var _inputlib2 = _interopRequireDefault(_inputlib);
+
+	var _storage = __webpack_require__(2);
+
+	var _storage2 = _interopRequireDefault(_storage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	(0, _jquery2.default)(function () {
+	  _inputlib2.default.getDataByKeyhash().then(function (items) {
 	    var passphrase = items['options']['passphrase'];
 	    var allowHosts = items['options']['allow-hosts'];
 	    var denyHosts = items['options']['deny-hosts'];
 	    var includePassword = items['options']['include-password'];
-	    var dataLength = 0;
 	    var pos = 0;
 
 	    if (items['tmpkey'] && items['tmpdata'] && items['tmphost']) {
-	      var tmpkey = items['tmpkey'];
-	      var tmpdata = items['tmpdata'];
-	      var tmphost = items['tmphost'];
-	      $('body').prepend('<div class="typd-box"><div class="typd-message"><p>' + 'typd: ' + chrome.i18n.getMessage('confirm_save_this_form_data') + '</p><button class="typd-btn typd-btn-save">' + chrome.i18n.getMessage('save_form_data') + '</button><button class="typd-btn typd-btn-cancel">' + chrome.i18n.getMessage('dont_save_form_data') + '</button><button class="typd-btn typd-btn-allow-host">' + chrome.i18n.getMessage('save_form_data_on_host', tmphost) + '</button><button class="typd-btn typd-btn-deny-host">' + chrome.i18n.getMessage('dont_save_form_data_on_host', tmphost) + '</button></div></div>');
-	      lib.removeTmpdata();
+	      (function () {
+	        var tmpkey = items['tmpkey'];
+	        var tmpdata = items['tmpdata'];
+	        var tmphost = items['tmphost'];
+	        (0, _jquery2.default)('body').prepend('<div class="typd-box"><div class="typd-message"><p>' + 'typd: ' + chrome.i18n.getMessage('confirm_save_this_form_data') + '</p><button class="typd-btn typd-btn-save">' + chrome.i18n.getMessage('save_form_data') + '</button><button class="typd-btn typd-btn-cancel">' + chrome.i18n.getMessage('dont_save_form_data') + '</button><button class="typd-btn typd-btn-allow-host">' + chrome.i18n.getMessage('save_form_data_on_host', tmphost) + '</button><button class="typd-btn typd-btn-deny-host">' + chrome.i18n.getMessage('dont_save_form_data_on_host', tmphost) + '</button></div></div>');
+	        _inputlib2.default.removeTmpdata();
 
-	      if (lib.isAllowHost(allowHosts)) {
-	        lib.setPrevdata(tmpkey, tmpdata);
-	      } else {
+	        if (_inputlib2.default.isAllowHost(allowHosts)) {
+	          _inputlib2.default.setPrevdata(tmpkey, tmpdata);
+	        } else {
 
-	        $('.typd-box').animate({
-	          bottom: 0
-	        }, function () {
-	          var $box = $(this);
-	          $('.typd-btn-save').on('click', function () {
-	            lib.setPrevdata(tmpkey, tmpdata);
-	            $box.animate({ bottom: -50 }, function () {
-	              $box.remove();
+	          (0, _jquery2.default)('.typd-box').animate({
+	            bottom: 0
+	          }, function () {
+	            var $box = (0, _jquery2.default)(undefined);
+	            (0, _jquery2.default)('.typd-btn-save').on('click', function () {
+	              _inputlib2.default.setPrevdata(tmpkey, tmpdata);
+	              $box.animate({ bottom: -50 }, function () {
+	                $box.remove();
+	              });
+	            });
+	            (0, _jquery2.default)('.typd-btn-cancel').on('click', function () {
+	              $box.animate({ bottom: -50 }, function () {
+	                $box.remove();
+	              });
+	            });
+	            (0, _jquery2.default)('.typd-btn-allow-host').on('click', function () {
+	              _inputlib2.default.allowHost(tmphost);
+	              $box.animate({ bottom: -50 }, function () {
+	                $box.remove();
+	              });
+	            });
+	            (0, _jquery2.default)('.typd-btn-deny-host').on('click', function () {
+	              _inputlib2.default.denyHost(tmphost);
+	              $box.animate({ bottom: -50 }, function () {
+	                $box.remove();
+	              });
 	            });
 	          });
-	          $('.typd-btn-cancel').on('click', function () {
-	            $box.animate({ bottom: -50 }, function () {
-	              $box.remove();
-	            });
-	          });
-	          $('.typd-btn-allow-host').on('click', function () {
-	            lib.allowHost(tmphost);
-	            $box.animate({ bottom: -50 }, function () {
-	              $box.remove();
-	            });
-	          });
-	          $('.typd-btn-deny-host').on('click', function () {
-	            lib.denyHost(tmphost);
-	            $box.animate({ bottom: -50 }, function () {
-	              $box.remove();
-	            });
-	          });
-	        });
-	      }
+	        }
+	      })();
 	    }
 
-	    if (_.has(items, keyhash)) {
-	      dataLength = items[keyhash].length;
-	    }
-	    chrome.runtime.sendMessage({ length: dataLength }, function (response) {});
-
-	    key.filter = function (event) {
+	    _keymaster2.default.filter = function (event) {
 	      var tagName = (event.target || event.srcElement).tagName;
 	      if (event.srcElement.contentEditable == 'true') {
 	        // ex. Gmailの返信
@@ -142,100 +129,112 @@
 	      return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
 	    };
 
-	    key(items['options']['key-restore'], function (event, handler) {
-	      if (dataLength == 0) {
-	        return false;
-	      }
-	      var data = lib.decryptInputData(items[keyhash][pos], passphrase);
-	      lib.restoreInputData(data);
-	      pos++;
-	      if (pos >= dataLength) {
-	        pos = 0;
-	      }
+	    (0, _keymaster2.default)(items['options']['key-restore'], function (event, handler) {
+	      _inputlib2.default.getDataByKeyhash().then(function (items) {
+	        var keyhash = items['keyhash'];
+	        var dataLength = 0;
+	        if (_underscore2.default.has(items, keyhash)) {
+	          dataLength = items[keyhash].length;
+	        }
+	        if (dataLength == 0) {
+	          pos = 0;
+	          return;
+	        }
+	        var data = _inputlib2.default.decryptInputData(items[keyhash][pos], passphrase);
+	        _inputlib2.default.restoreInputData(data);
+	        pos++;
+	        if (pos >= dataLength) {
+	          pos = 0;
+	        }
+	      }).catch(function (err) {
+	        console.warn(err);
+	      });
+
 	      return false;
 	    });
 
-	    key(items['options']['key-clear'], function (event, handler) {
-	      if (dataLength == 0) {
-	        return false;
-	      }
-	      lib.clearDataByKeyhash(keyhash);
+	    (0, _keymaster2.default)(items['options']['key-clear'], function (event, handler) {
+	      _inputlib2.default.getDataByKeyhash().then(function (items) {
+	        var keyhash = items['keyhash'];
+	        var dataLength = 0;
+	        if (_underscore2.default.has(items, keyhash)) {
+	          dataLength = items[keyhash].length;
+	        }
+	        if (dataLength == 0) {
+	          pos = 0;
+	          return;
+	        }
+	        _inputlib2.default.clearDataByKeyhash(keyhash);
+	      }).catch(function (err) {
+	        console.warn(err);
+	      });
 	      return false;
 	    });
 
-	    $('form').on('submit', function () {
-	      if (lib.isDenyHost(denyHosts)) {
-	        return true;
-	      }
-
-	      var data = lib.gatherInputData();
-
-	      if (JSON.stringify(data) == '{}') {
-	        return true;
-	      }
-	      if (_.uniq(_.values(data)).toString() == [""].toString()) {
-	        return true;
-	      }
-
-	      if (!includePassword) {
-	        _.map(lib.typePasswordNames, function (name) {
-	          data[name] = '';
-	        });
-	      }
-
-	      chrome.storage.local.get([keyhash], function (items) {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
+	    (0, _jquery2.default)('form').on('submit', function () {
+	      _inputlib2.default.getDataByKeyhash().then(function (items) {
+	        var keyhash = items['keyhash'];
+	        if (_inputlib2.default.isDenyHost(denyHosts)) {
+	          return Promise.resolve();
 	        }
 
-	        var datas = [];
-	        var encrypted = lib.encryptInputData(data, passphrase);
-	        var datahash = lib.generateDatahash(data);
+	        var data = _inputlib2.default.gatherInputData();
+
+	        if (JSON.stringify(data) == '{}') {
+	          return Promise.resolve();
+	        }
+	        if (_underscore2.default.uniq(_underscore2.default.values(data)).toString() == [""].toString()) {
+	          return Promise.resolve();
+	        }
+
+	        if (!includePassword) {
+	          _underscore2.default.map(_inputlib2.default.typePasswordNames, function (name) {
+	            data[name] = '';
+	          });
+	        }
+
+	        var dataArray = [];
+	        var encrypted = _inputlib2.default.encryptInputData(data, passphrase);
+	        var datahash = _inputlib2.default.generateDatahash(data);
 
 	        // 既存データを設置
-	        if (_.has(items, keyhash)) {
-	          datas = items[keyhash];
+	        if (_underscore2.default.has(items, keyhash)) {
+	          dataArray = items[keyhash];
 	        }
 
 	        var hashitem = {};
 	        hashitem[datahash] = encrypted;
 
-	        var exists = _.filter(datas, function (d) {
-	          return datahash == _.first(_.keys(d));
+	        var exists = _underscore2.default.filter(dataArray, function (d) {
+	          return datahash == _underscore2.default.first(_underscore2.default.keys(d));
 	        }).length;
 
 	        if (exists > 0) {
 	          // 既に存在する場合はソートをして保存
-	          var filterd = _.filter(datas, function (d) {
-	            return datahash != _.first(_.keys(d));
+	          var filterd = _underscore2.default.filter(dataArray, function (d) {
+	            return datahash != _underscore2.default.first(_underscore2.default.keys(d));
 	          });
 	          filterd.unshift(hashitem);
 
 	          items = {};
-	          items[keyhash] = _.uniq(filterd);
-	          chrome.storage.local.set(items, function () {
-	            if (chrome.extension.lastError !== undefined) {
-	              // failure
-	              throw 'typd: chrome.extention.error';
-	            }
-	          });
+	          items[keyhash] = _underscore2.default.uniq(filterd);
 	        } else {
 	          // 新規データ
 	          items = {};
 	          items['tmpkey'] = keyhash;
 	          items['tmpdata'] = hashitem;
 	          items['tmphost'] = window.location.host;
-	          chrome.storage.local.set(items, function () {
-	            if (chrome.extension.lastError !== undefined) {
-	              // failure
-	              throw 'typd: chrome.extention.error';
-	            }
-	          });
 	        }
+
+	        return _storage2.default.set(items);
+	      }).catch(function (err) {
+	        console.warn(err);
 	      });
+
 	      return true;
 	    });
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	});
 
@@ -1795,196 +1794,58 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	/*
-	 * Copyright (c) 2013 nazomikan
-	 * https://github.com/nazomikan/PubsubJS
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-	 * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-	 * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-	 * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-	 * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-	 */
-	(function (name, global, definition) {
-	  if (true) {
-	    module.exports = definition();
-	  } else if (typeof require !== 'undefined' && typeof require.amd === 'object') {
-	    define(definition);
-	  } else {
-	    global[name] = definition();
+	"use strict";
+
+	var storage = {
+	  get: function get(keys) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.get(keys, function (items) {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(items);
+	      });
+	    });
+	  },
+	  set: function set(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.set(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  remove: function remove(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.remove(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  clear: function clear() {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.clear(function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
 	  }
-	})('Pubsub', this, function () {
-	  var arrayProto = Array.prototype
-	    , slice = arrayProto.slice
-	    ;
+	};
 
-	  function Context() {
-	    this.subscribers = {};
-	  }
-
-	  Context.create = function createContext() {
-	    var context = createObject(Context.prototype)
-	      , args = slice.call(arguments)
-	      ;
-
-	    Context.apply(context, args);
-	    return context;
-	  };
-
-	  Context.prototype.publish = function (/*eventName, context, args*/) {
-	    var args = slice.call(arguments)
-	      , eventName = args.shift()
-	      , context = args.shift()
-	      , subscribers = this.subscribers[eventName] || []
-	      , params = [context].concat(args)
-	      , i
-	      , l
-	      , c
-	      ;
-
-	    if (!checkContext(context)) {
-	      throw new TypeError('publish: The second arguments must be pubsub#Context or Null');
-	    }
-
-	    for (i = 0, l = subscribers.length; i < l; i++) {
-	      subscribers[i].apply(null, params);
-	      // length may change by subscribeOnce.
-	      l !== (c = subscribers.length) && (--i, l = c);
-	    }
-	  };
-
-	  Context.prototype.subscribe = function (eventName, handler) {
-	    this.subscribers[eventName] = this.subscribers[eventName] || [];
-	    this.subscribers[eventName].push(handler);
-	  };
-
-	  Context.prototype.subscribeOnce = function (eventName, handler) {
-	    var that = this
-	      , func
-	      ;
-
-	    func = function () {
-	      var args = slice.call(arguments);
-	      handler.apply(null, args);
-	      that.unsubscribe(eventName, func);
-	    };
-
-	    that.subscribe(eventName, func);
-	  };
-
-	  Context.prototype.unsubscribe = function (eventName, handler) {
-	    var subscribers = this.subscribers
-	      , targetSubscribers = subscribers[eventName] || []
-	      , i
-	      , iz
-	      ;
-
-	    if (!handler) {
-	      delete subscribers[eventName];
-	      return;
-	    }
-
-	    for (i = targetSubscribers.length - 1, iz = 0; i >= iz; i--) {
-	      // fn.guid -> support jquery.proxy
-	      if (targetSubscribers[i] === handler || (handler.guid && (targetSubscribers[i].guid === handler.guid))) {
-	        targetSubscribers.splice(i, 1);
-	      }
-	    }
-	  };
-
-	  Context.prototype.dump = function (eventName) {
-	    return eventName ? (this.subscribers[eventName] || []) : this.subscribers;
-	  };
-
-	  function Pubsub() {
-	    this.Context = Context;
-	    this.globalContext = Context.create();
-	  }
-
-	  Pubsub.create = function () {
-	    var pubsub = createObject(Pubsub.prototype)
-	      , args = slice.call(arguments)
-	      ;
-
-	    Pubsub.apply(pubsub, args);
-	    return pubsub;
-	  };
-
-	  Pubsub.prototype.publish = function (/*eventName, context, args*/) {
-	    var args = slice.call(arguments)
-	      , eventName = args.shift()
-	      , globalContext = this.globalContext
-	      , context = args.shift()
-	      , params = [eventName, context].concat(args)
-	      ;
-
-	    globalContext.publish.apply(globalContext, params);
-	  };
-
-	  Pubsub.prototype.subscribe = function (eventName, handler) {
-	    var context = this.globalContext
-	      ;
-	    context.subscribe(eventName, handler);
-	  };
-
-	  Pubsub.prototype.subscribeOnce = function (eventName, handler) {
-	    var context = this.globalContext
-	      ;
-	    context.subscribeOnce(eventName, handler);
-	  };
-
-	  Pubsub.prototype.unsubscribe = function (eventName, handler) {
-	    var context = this.globalContext
-	      ;
-	    context.unsubscribe(eventName, handler);
-	  };
-
-	  Pubsub.prototype.dump = function (eventName) {
-	    var context = this.globalContext
-	      ;
-	    return context.dump(eventName);
-	  }
-
-	  function createObject(obj) {
-	    if (Object.create) {
-	      return Object.create(obj);
-	    }
-
-	    if (arguments.length > 1) {
-	      throw new Error('Object.create implementation only accepts the first parameter.');
-	    }
-	    function F() {}
-	    F.prototype = obj;
-	    return new F();
-	  }
-
-	  function checkContext(obj) {
-	    if (!(obj instanceof Context) &&
-	      !(obj instanceof Pubsub) &&
-	      !(obj == null)) {
-	      return false;
-	    }
-	    return true;
-	  }
-
-	  return Pubsub;
-	});
-
+	module.exports = storage;
 
 /***/ },
 /* 3 */
@@ -12112,9 +11973,12 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var _ = __webpack_require__(1);
 	var $ = __webpack_require__(3);
 	var CryptoJS = __webpack_require__(6);
+	var storage = __webpack_require__(2);
 
 	// type="password" だったinputのname属性
 	var typePasswordNames = [];
@@ -12267,18 +12131,15 @@
 	  var keys = _.keys(data).sort();
 	  var keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
 	  var keymap = {};
-	  chrome.storage.local.get(['keymap'], function (items) {
+	  storage.get(['keymap']).then(function (items) {
 	    if (_.has(items, 'keymap')) {
 	      keymap = items['keymap'];
 	    }
 	    keymap[keyhash] = keys;
 	    items['keymap'] = keymap;
-	    chrome.storage.local.set(items, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(items);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 
 	  return keyhash;
@@ -12295,12 +12156,7 @@
 	}
 
 	function setPrevdata(tmpkey, tmpdata) {
-	  chrome.storage.local.get([tmpkey], function (previtems) {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
-
+	  storage.get([tmpkey]).then(function (previtems) {
 	    var prevdatas = [];
 
 	    // 既存データを設置
@@ -12311,27 +12167,22 @@
 	    var tmpitems = {};
 	    tmpitems[tmpkey] = _.uniq(prevdatas);
 
-	    chrome.storage.local.set(tmpitems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	      removeTmpdata();
-	    });
+	    return storage.set(tmpitems);
+	  }).then(function (res) {
+	    removeTmpdata();
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function removeTmpdata() {
-	  chrome.storage.local.remove(['tmpkey', 'tmpdata'], function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
+	  storage.remove(['tmpkey', 'tmpdata']).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function denyHost(host) {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -12345,17 +12196,14 @@
 	    options['deny-hosts'] = denyHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    chrome.storage.local.set(setItems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(setItems);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function allowHost(host) {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -12369,12 +12217,9 @@
 	    options['allow-hosts'] = allowHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    chrome.storage.local.set(setItems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(setItems);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
@@ -12414,17 +12259,15 @@
 	  options['key-clear'] = 'shift+c';
 	  var items = {};
 	  items['options'] = options;
-	  chrome.storage.local.set(items, function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
+	  storage.set(items).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
+
 	  return options;
 	}
 
 	function restoreOptions() {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -12435,6 +12278,8 @@
 	    $('#key-clear').val(options['key-clear']);
 	    $('#deny-hosts').val(options['deny-hosts']);
 	    $('#allow-hosts').val(options['allow-hosts']);
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
@@ -12449,65 +12294,87 @@
 	  options['allow-hosts'] = $('#allow-hosts').val();
 	  var items = {};
 	  items['options'] = options;
-	  chrome.storage.local.set(items, function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
-	    // success
+	  storage.set(items).then(function (res) {
 	    $('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function clearDataByKeyhash(keyhash) {
-	  try {
-	    if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
-	      chrome.storage.local.remove(keyhash, function () {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
-	        }
-	        chrome.runtime.sendMessage({ length: 0 }, function (response) {});
-	      });
-	      chrome.storage.local.get(['keymap'], function (items) {
-	        var keymap = {};
-	        if (_.has(items, 'keymap')) {
-	          keymap = items['keymap'];
-	        }
-	        if (!_.has(keymap, keyhash)) {
-	          return;
-	        }
-	        delete keymap[keyhash];
-	        items['keymap'] = keymap;
-	        chrome.storage.local.set(items, function () {
-	          if (chrome.extension.lastError !== undefined) {
-	            // failure
-	            throw 'typd: chrome.extention.error';
-	          }
-	        });
-	      });
-	    }
-	  } catch (e) {
-	    alert(chrome.i18n.getMessage('data_delete_error'));
+	  if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
+	    storage.remove(keyhash).then(function (res) {
+	      chrome.runtime.sendMessage({ length: 0 }, function (response) {});
+	    }).catch(function (err) {
+	      console.warn(err);
+	    });
+	    storage.get(['keymap']).then(function (items) {
+	      var keymap = {};
+	      if (_.has(items, 'keymap')) {
+	        keymap = items['keymap'];
+	      }
+	      if (!_.has(keymap, keyhash)) {
+	        return new Promise.reject('no keyhash');
+	      }
+	      delete keymap[keyhash];
+	      items['keymap'] = keymap;
+	      return storage.set(items);
+	    }).catch(function (err) {
+	      console.warn(err);
+	    });
 	  }
 	}
 
 	function clearAllData() {
 	  $('#options-message').hide();
-	  chrome.storage.local.get(['disabled', 'options'], function (items) {
-	    chrome.storage.local.clear(function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
+	  storage.get(['disabled', 'options']).then(function (items) {
+	    return Promise.all([new Promise(function (resolve, reject) {
+	      resolve(items);
+	    }), storage.clear()]);
+	  }).then(function (res) {
+	    var items = res[0];
+	    return storage.set(items);
+	  }).then(function (res) {
+	    $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
+	  }).catch(function (err) {
+	    console.warn(err);
+	  });
+	}
+
+	function getDataByKeyhash() {
+	  var keyhash = generateKeyhash();
+	  return new Promise(function (resolve, reject) {
+	    storage.get(['disabled', 'options', 'tmpkey', 'tmpdata', 'tmphost', keyhash]).then(function (items) {
+	      if (!_.has(items, 'disabled')) {
+	        reject('disabled');
 	      }
-	      chrome.storage.local.set(items, function () {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
-	        }
-	        // success
-	        $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
-	      });
+	      if (items['disabled']) {
+	        reject('disabled');
+	      }
+	      if (!_.has(items, 'options')) {
+	        setDefaultOptions();
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      if (!_.has(items['options'], 'passphrase')) {
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      if (!items['options']['passphrase']) {
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      items['keyhash'] = keyhash;
+
+	      var dataLength = 0;
+	      if (_.has(items, keyhash)) {
+	        dataLength = items[keyhash].length;
+	      }
+	      chrome.runtime.sendMessage({ length: dataLength }, function (response) {});
+
+	      resolve(items);
+	    }).catch(function (err) {
+	      reject(err);
 	    });
 	  });
 	}
@@ -12530,7 +12397,8 @@
 	  restoreOptions: restoreOptions,
 	  saveOptions: saveOptions,
 	  clearDataByKeyhash: clearDataByKeyhash,
-	  clearAllData: clearAllData
+	  clearAllData: clearAllData,
+	  getDataByKeyhash: getDataByKeyhash
 	};
 
 /***/ },

@@ -44,28 +44,37 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ = __webpack_require__(3);
-	var lib = __webpack_require__(5);
+	'use strict';
 
-	$(function () {
+	var _jquery = __webpack_require__(3);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _inputlib = __webpack_require__(5);
+
+	var _inputlib2 = _interopRequireDefault(_inputlib);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	(0, _jquery2.default)(function () {
 	  chrome.storage.local.getBytesInUse(null, function (byteInUse) {
-	    $('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' bytes )');
+	    (0, _jquery2.default)('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' bytes )');
 	  });
 
 	  // Restore options
-	  lib.restoreOptions();
+	  _inputlib2.default.restoreOptions();
 
 	  // Save options
-	  $('#save-options').on('click', function () {
-	    lib.saveOptions();
+	  (0, _jquery2.default)('#save-options').on('click', function () {
+	    _inputlib2.default.saveOptions();
 	  });
 
-	  $('#clear-data').on('click', function () {
-	    lib.clearAllData();
+	  (0, _jquery2.default)('#clear-data').on('click', function () {
+	    _inputlib2.default.clearAllData();
 	  });
 
-	  $('#options-message').on('click', function () {
-	    $(this).fadeOut();
+	  (0, _jquery2.default)('#options-message').on('click', function () {
+	    (0, _jquery2.default)(undefined).fadeOut();
 	  });
 	});
 
@@ -1624,7 +1633,61 @@
 
 
 /***/ },
-/* 2 */,
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var storage = {
+	  get: function get(keys) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.get(keys, function (items) {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(items);
+	      });
+	    });
+	  },
+	  set: function set(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.set(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  remove: function remove(items) {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.remove(items, function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  },
+	  clear: function clear() {
+	    return new Promise(function (resolve, reject) {
+	      chrome.storage.local.clear(function () {
+	        if (chrome.extension.lastError !== undefined) {
+	          // failure
+	          reject(chrome.extension.lastError);
+	        }
+	        resolve(true);
+	      });
+	    });
+	  }
+	};
+
+	module.exports = storage;
+
+/***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -11449,9 +11512,12 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var _ = __webpack_require__(1);
 	var $ = __webpack_require__(3);
 	var CryptoJS = __webpack_require__(6);
+	var storage = __webpack_require__(2);
 
 	// type="password" だったinputのname属性
 	var typePasswordNames = [];
@@ -11604,18 +11670,15 @@
 	  var keys = _.keys(data).sort();
 	  var keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
 	  var keymap = {};
-	  chrome.storage.local.get(['keymap'], function (items) {
+	  storage.get(['keymap']).then(function (items) {
 	    if (_.has(items, 'keymap')) {
 	      keymap = items['keymap'];
 	    }
 	    keymap[keyhash] = keys;
 	    items['keymap'] = keymap;
-	    chrome.storage.local.set(items, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(items);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 
 	  return keyhash;
@@ -11632,12 +11695,7 @@
 	}
 
 	function setPrevdata(tmpkey, tmpdata) {
-	  chrome.storage.local.get([tmpkey], function (previtems) {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
-
+	  storage.get([tmpkey]).then(function (previtems) {
 	    var prevdatas = [];
 
 	    // 既存データを設置
@@ -11648,27 +11706,22 @@
 	    var tmpitems = {};
 	    tmpitems[tmpkey] = _.uniq(prevdatas);
 
-	    chrome.storage.local.set(tmpitems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	      removeTmpdata();
-	    });
+	    return storage.set(tmpitems);
+	  }).then(function (res) {
+	    removeTmpdata();
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function removeTmpdata() {
-	  chrome.storage.local.remove(['tmpkey', 'tmpdata'], function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
+	  storage.remove(['tmpkey', 'tmpdata']).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function denyHost(host) {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -11682,17 +11735,14 @@
 	    options['deny-hosts'] = denyHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    chrome.storage.local.set(setItems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(setItems);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function allowHost(host) {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -11706,12 +11756,9 @@
 	    options['allow-hosts'] = allowHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    chrome.storage.local.set(setItems, function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
-	      }
-	    });
+	    return storage.set(setItems);
+	  }).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
@@ -11751,17 +11798,15 @@
 	  options['key-clear'] = 'shift+c';
 	  var items = {};
 	  items['options'] = options;
-	  chrome.storage.local.set(items, function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
+	  storage.set(items).then(function (res) {}).catch(function (err) {
+	    console.warn(err);
 	  });
+
 	  return options;
 	}
 
 	function restoreOptions() {
-	  chrome.storage.local.get('options', function (items) {
+	  storage.get('options').then(function (items) {
 	    var options = items['options'];
 	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
@@ -11772,6 +11817,8 @@
 	    $('#key-clear').val(options['key-clear']);
 	    $('#deny-hosts').val(options['deny-hosts']);
 	    $('#allow-hosts').val(options['allow-hosts']);
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
@@ -11786,65 +11833,87 @@
 	  options['allow-hosts'] = $('#allow-hosts').val();
 	  var items = {};
 	  items['options'] = options;
-	  chrome.storage.local.set(items, function () {
-	    if (chrome.extension.lastError !== undefined) {
-	      // failure
-	      throw 'typd: chrome.extention.error';
-	    }
-	    // success
+	  storage.set(items).then(function (res) {
 	    $('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
+	  }).catch(function (err) {
+	    console.warn(err);
 	  });
 	}
 
 	function clearDataByKeyhash(keyhash) {
-	  try {
-	    if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
-	      chrome.storage.local.remove(keyhash, function () {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
-	        }
-	        chrome.runtime.sendMessage({ length: 0 }, function (response) {});
-	      });
-	      chrome.storage.local.get(['keymap'], function (items) {
-	        var keymap = {};
-	        if (_.has(items, 'keymap')) {
-	          keymap = items['keymap'];
-	        }
-	        if (!_.has(keymap, keyhash)) {
-	          return;
-	        }
-	        delete keymap[keyhash];
-	        items['keymap'] = keymap;
-	        chrome.storage.local.set(items, function () {
-	          if (chrome.extension.lastError !== undefined) {
-	            // failure
-	            throw 'typd: chrome.extention.error';
-	          }
-	        });
-	      });
-	    }
-	  } catch (e) {
-	    alert(chrome.i18n.getMessage('data_delete_error'));
+	  if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
+	    storage.remove(keyhash).then(function (res) {
+	      chrome.runtime.sendMessage({ length: 0 }, function (response) {});
+	    }).catch(function (err) {
+	      console.warn(err);
+	    });
+	    storage.get(['keymap']).then(function (items) {
+	      var keymap = {};
+	      if (_.has(items, 'keymap')) {
+	        keymap = items['keymap'];
+	      }
+	      if (!_.has(keymap, keyhash)) {
+	        return new Promise.reject('no keyhash');
+	      }
+	      delete keymap[keyhash];
+	      items['keymap'] = keymap;
+	      return storage.set(items);
+	    }).catch(function (err) {
+	      console.warn(err);
+	    });
 	  }
 	}
 
 	function clearAllData() {
 	  $('#options-message').hide();
-	  chrome.storage.local.get(['disabled', 'options'], function (items) {
-	    chrome.storage.local.clear(function () {
-	      if (chrome.extension.lastError !== undefined) {
-	        // failure
-	        throw 'typd: chrome.extention.error';
+	  storage.get(['disabled', 'options']).then(function (items) {
+	    return Promise.all([new Promise(function (resolve, reject) {
+	      resolve(items);
+	    }), storage.clear()]);
+	  }).then(function (res) {
+	    var items = res[0];
+	    return storage.set(items);
+	  }).then(function (res) {
+	    $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
+	  }).catch(function (err) {
+	    console.warn(err);
+	  });
+	}
+
+	function getDataByKeyhash() {
+	  var keyhash = generateKeyhash();
+	  return new Promise(function (resolve, reject) {
+	    storage.get(['disabled', 'options', 'tmpkey', 'tmpdata', 'tmphost', keyhash]).then(function (items) {
+	      if (!_.has(items, 'disabled')) {
+	        reject('disabled');
 	      }
-	      chrome.storage.local.set(items, function () {
-	        if (chrome.extension.lastError !== undefined) {
-	          // failure
-	          throw 'typd: chrome.extention.error';
-	        }
-	        // success
-	        $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
-	      });
+	      if (items['disabled']) {
+	        reject('disabled');
+	      }
+	      if (!_.has(items, 'options')) {
+	        setDefaultOptions();
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      if (!_.has(items['options'], 'passphrase')) {
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      if (!items['options']['passphrase']) {
+	        alert(chrome.i18n.getMessage('no_passphrase'));
+	        reject(chrome.i18n.getMessage('no_passphrase'));
+	      }
+	      items['keyhash'] = keyhash;
+
+	      var dataLength = 0;
+	      if (_.has(items, keyhash)) {
+	        dataLength = items[keyhash].length;
+	      }
+	      chrome.runtime.sendMessage({ length: dataLength }, function (response) {});
+
+	      resolve(items);
+	    }).catch(function (err) {
+	      reject(err);
 	    });
 	  });
 	}
@@ -11867,7 +11936,8 @@
 	  restoreOptions: restoreOptions,
 	  saveOptions: saveOptions,
 	  clearDataByKeyhash: clearDataByKeyhash,
-	  clearAllData: clearAllData
+	  clearAllData: clearAllData,
+	  getDataByKeyhash: getDataByKeyhash
 	};
 
 /***/ },

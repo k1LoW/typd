@@ -1,4 +1,5 @@
-var _ = require('underscore');
+import _ from 'underscore';
+import storage from './storage';
 
 function toggleIcon(disabled) {
   if (disabled) {
@@ -14,7 +15,7 @@ function toggleIcon(disabled) {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  var length = request['length'].toString();
+  let length = request['length'].toString();
   if (length == '0') {
     length = '-';
   }
@@ -22,44 +23,35 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
   sendResponse({});
 });
 
-chrome.storage.local.get(['disabled'], function(items) {
-  if(chrome.extension.lastError !== undefined) {
-    // failure
-    throw 'typd: chrome.extention.error';
+storage.get(['disabled']).then((items) => {  
+  if (_.has(items, 'disabled')) {
+    toggleIcon(items['disabled']);
   } else {
-    // success
-    if (_.has(items, 'disabled')) {
-      toggleIcon(items['disabled']);
-    } else {
-      toggleIcon(false);
-    }        
-  }
+    toggleIcon(false);
+  }        
+}).catch((err) => {
+  console.warn(err);
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.storage.local.get(['disabled'], function(items) {
-    if(chrome.extension.lastError !== undefined) {
-      // failure
-      throw 'typd: chrome.extention.error';
-    } else {
-      // success
-      var toggle = false;
-      if (_.has(items, 'disabled')) {
-        toggle = items['disabled'];
-      }
-      toggle = !toggle;
-      var updates = {};
-      updates['disabled'] = toggle;
-      chrome.storage.local.set(updates, function() {
-        if(chrome.extension.lastError !== undefined) {
-          // failure
-          throw 'typd: chrome.extention.error';
-        }
-        else {
-          // success
-        }
-      });
-      toggleIcon(toggle);
+  storage.get(['disabled']).then((items) => {
+    let toggle = false;
+    if (_.has(items, 'disabled')) {
+      toggle = items['disabled'];
     }
+    toggle = !toggle;
+    let updates = {};
+    updates['disabled'] = toggle;
+    return Promise.all([
+      new Promise((resolve, reject) => {
+        resolve(toggle);
+      }),
+      storage.set(updates)
+    ]);
+  }).then((res) => {
+    let toggle = res[0];
+    toggleIcon(toggle);
+  }).catch((err) => {
+    console.warn(err);
   });
 });

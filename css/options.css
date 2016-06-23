@@ -57,7 +57,6 @@ button, .btn {
 button:hover {
   opacity: 0.8;
 }
-
 button#save-options {
   margin-top:10px;
 }
@@ -77,6 +76,14 @@ button#clear-data {
   padding: 3px;
   margin: 2px;
   background-color: #EFEFEF;
+}
+span.input-name {
+  display: inline-block;
+  color: #fff;
+  background-color: #B4CDD8;
+  padding: 2px 4px;
+  margin: 2px;
+  border-radius: 2px;
 }
 
 .text-used-storage:before {

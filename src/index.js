@@ -1,55 +1,21 @@
-// pubsub
-var pubsub = require('pubsubjs').create();
-var _ = require('underscore');
-var $ = require('jquery');
-var key = require('keymaster');
-var lib = require('./inputlib');
+import _ from 'underscore';
+import $ from 'jquery';
+import key from 'keymaster';
+import lib from './inputlib';
+import storage from './storage';
 
-$(function() {
-  var keyhash = lib.generateKeyhash();
-  chrome.storage.local.get([
-    'disabled',
-    'options',
-    'tmpkey',
-    'tmpdata',
-    'tmphost',
-    keyhash
-  ], function(items) {
-    if(chrome.extension.lastError !== undefined) { // failure
-      throw 'typd: chrome.extention.error';
-    }
-
-    if (!_.has(items, 'disabled')) {
-      return;
-    }
-    if (items['disabled']) {
-      return;
-    }
-    if (!_.has(items, 'options')) {
-      lib.setDefaultOptions();
-      alert(chrome.i18n.getMessage('no_passphrase'));
-      return;
-    }
-    if (!_.has(items['options'], 'passphrase')) {
-      alert(chrome.i18n.getMessage('no_passphrase'));
-      return;
-    }
-    if (!items['options']['passphrase']) {
-      alert(chrome.i18n.getMessage('no_passphrase'));
-      return;
-    }
-
-    var passphrase = items['options']['passphrase'];
-    var allowHosts = items['options']['allow-hosts'];
-    var denyHosts = items['options']['deny-hosts'];
-    var includePassword = items['options']['include-password'];
-    var dataLength = 0;
-    var pos = 0;
-
+$(() => {
+  lib.getDataByKeyhash().then((items) => {
+    let passphrase = items['options']['passphrase'];
+    let allowHosts = items['options']['allow-hosts'];
+    let denyHosts = items['options']['deny-hosts'];
+    let includePassword = items['options']['include-password'];
+    let pos = 0;
+    
     if (items['tmpkey'] && items['tmpdata'] && items['tmphost']) {
-      var tmpkey = items['tmpkey'];
-      var tmpdata = items['tmpdata'];
-      var tmphost = items['tmphost'];
+      let tmpkey = items['tmpkey'];
+      let tmpdata = items['tmpdata'];
+      let tmphost = items['tmphost'];
       $('body').prepend('<div class="typd-box"><div class="typd-message"><p>'
                         + 'typd: ' 
                         + chrome.i18n.getMessage('confirm_save_this_form_data')
@@ -70,28 +36,28 @@ $(function() {
         
         $('.typd-box').animate({
           bottom:0
-        }, function() {
-          var $box = $(this);
-          $('.typd-btn-save').on('click', function() {
+        }, () => {
+          let $box = $(this);
+          $('.typd-btn-save').on('click', () => {
             lib.setPrevdata(tmpkey, tmpdata);
-            $box.animate({bottom:-50}, function() {
+            $box.animate({bottom:-50}, () => {
               $box.remove();
             });
           });
-          $('.typd-btn-cancel').on('click', function() {
-            $box.animate({bottom:-50}, function() {
+          $('.typd-btn-cancel').on('click', () => {
+            $box.animate({bottom:-50}, () => {
               $box.remove();
             });
           });
-          $('.typd-btn-allow-host').on('click', function() {
+          $('.typd-btn-allow-host').on('click', () => {
             lib.allowHost(tmphost);
-            $box.animate({bottom:-50}, function() {
+            $box.animate({bottom:-50}, () => {
               $box.remove();
             });
           });
-          $('.typd-btn-deny-host').on('click', function() {
+          $('.typd-btn-deny-host').on('click', () => {
             lib.denyHost(tmphost);
-            $box.animate({bottom:-50}, function() {
+            $box.animate({bottom:-50}, () => {
               $box.remove();
             });
           });
@@ -100,112 +66,121 @@ $(function() {
       }
     }
     
-    if (_.has(items, keyhash)) {
-      dataLength = items[keyhash].length;
-    }
-    chrome.runtime.sendMessage({length:dataLength}, function(response) {});
-
-    key.filter = function(event){
-      var tagName = (event.target || event.srcElement).tagName;
+    key.filter = (event) => {
+      let tagName = (event.target || event.srcElement).tagName;
       if (event.srcElement.contentEditable == 'true') {
         // ex. Gmailの返信
         return false;
       }
       return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
     };
-    
-    key(items['options']['key-restore'], function(event, handler){
-      if (dataLength == 0) {
-        return false;
-      }
-      var data = lib.decryptInputData(items[keyhash][pos], passphrase);
-      lib.restoreInputData(data);
-      pos++;
-      if (pos >= dataLength) {
-        pos = 0;
-      }
+
+    key(items['options']['key-restore'], (event, handler) => {
+      lib.getDataByKeyhash().then((items) => {
+        let keyhash = items['keyhash'];
+        let dataLength = 0;
+        if (_.has(items, keyhash)) {
+          dataLength = items[keyhash].length;
+        }
+        if (dataLength == 0) {
+          pos = 0;
+          return;
+        }
+        let data = lib.decryptInputData(items[keyhash][pos], passphrase);
+        lib.restoreInputData(data);
+        pos++;
+        if (pos >= dataLength) {
+          pos = 0;
+        }
+      }).catch((err) => {
+        console.warn(err);
+      });
+      
       return false;
     });
 
-    key(items['options']['key-clear'], function(event, handler){
-      if (dataLength == 0) {
-        return false;
-      }
-      lib.clearDataByKeyhash(keyhash);
+    key(items['options']['key-clear'], (event, handler) => {
+      lib.getDataByKeyhash().then((items) => {
+        let keyhash = items['keyhash'];
+        let dataLength = 0;
+        if (_.has(items, keyhash)) {
+          dataLength = items[keyhash].length;
+        }
+        if (dataLength == 0) {
+          pos = 0;
+          return;
+        }
+        lib.clearDataByKeyhash(keyhash);
+      }).catch((err) => {
+        console.warn(err);
+      });
       return false;
     });
 
-    $('form').on('submit', function() {
-      if (lib.isDenyHost(denyHosts)) {
-        return true;
-      }
-      
-      var data = lib.gatherInputData();
-      
-      if (JSON.stringify(data) == '{}') {
-        return true;
-      }
-      if (_.uniq(_.values(data)).toString() == [""].toString()) {
-        return true;
-      }
-
-      if (!includePassword) {
-        _.map(lib.typePasswordNames, function(name) {
-          data[name] = '';
-        });
-      }
-
-      chrome.storage.local.get([keyhash], function(items) {
-        if(chrome.extension.lastError !== undefined) { // failure
-          throw 'typd: chrome.extention.error';
+    $('form').on('submit', () => {
+      lib.getDataByKeyhash().then((items) => {
+        let keyhash = items['keyhash'];
+        if (lib.isDenyHost(denyHosts)) {
+          return Promise.resolve();
+        }
+        
+        let data = lib.gatherInputData();
+        
+        if (JSON.stringify(data) == '{}') {
+          return Promise.resolve();
+        }
+        if (_.uniq(_.values(data)).toString() == [""].toString()) {
+          return Promise.resolve();
         }
 
-        var datas = [];
-        var encrypted = lib.encryptInputData(data, passphrase);
-        var datahash = lib.generateDatahash(data);
+        if (!includePassword) {
+          _.map(lib.typePasswordNames, (name) => {
+            data[name] = '';
+          });
+        }
+
+        let dataArray = [];
+        let encrypted = lib.encryptInputData(data, passphrase);
+        let datahash = lib.generateDatahash(data);
 
         // 既存データを設置
         if (_.has(items, keyhash)) {
-          datas = items[keyhash];
+          dataArray = items[keyhash];
         }
 
-        var hashitem = {};
+        let hashitem = {};
         hashitem[datahash] = encrypted;
 
-        var exists = _.filter(datas, function(d) {
+        let exists = _.filter(dataArray, (d) => {
           return (datahash == _.first(_.keys(d)));
         }).length;
 
         if (exists > 0) {
           // 既に存在する場合はソートをして保存
-          var filterd = _.filter(datas, function(d) {
+          let filterd = _.filter(dataArray, (d) => {
             return (datahash != _.first(_.keys(d)));
           });
           filterd.unshift(hashitem);
 
-          items ={};
+          items = {};
           items[keyhash] = _.uniq(filterd);
-          chrome.storage.local.set(items, function() {
-            if(chrome.extension.lastError !== undefined) { // failure
-              throw 'typd: chrome.extention.error';
-            }
-          });
         } else {
           // 新規データ
-          items ={};
+          items = {};
           items['tmpkey'] = keyhash;
           items['tmpdata'] = hashitem;
           items['tmphost'] = window.location.host;
-          chrome.storage.local.set(items, function() {
-            if(chrome.extension.lastError !== undefined) { // failure
-              throw 'typd: chrome.extention.error';
-            }
-          });
         }
+        
+        return storage.set(items);
+      }).catch((err) => {
+        console.warn(err);
       });
+      
       return true;
     });
-
+    
+  }).catch((err) => {
+    console.warn(err);
   });
-
 });
