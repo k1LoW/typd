@@ -81,7 +81,7 @@
 	    $tbody.append(tr);
 	  });
 	  (0, _jquery2.default)('.clear-data').on('click', function () {
-	    var $self = (0, _jquery2.default)(undefined);
+	    var $self = (0, _jquery2.default)(this);
 	    var keyhash = $self.data('keyhash');
 	    _inputlib2.default.clearDataByKeyhash(keyhash);
 	    location.reload();
@@ -11526,10 +11526,23 @@
 
 	'use strict';
 
-	var _ = __webpack_require__(1);
-	var $ = __webpack_require__(3);
-	var CryptoJS = __webpack_require__(6);
-	var storage = __webpack_require__(2);
+	var _underscore = __webpack_require__(1);
+
+	var _underscore2 = _interopRequireDefault(_underscore);
+
+	var _jquery = __webpack_require__(3);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _cryptoJs = __webpack_require__(6);
+
+	var _cryptoJs2 = _interopRequireDefault(_cryptoJs);
+
+	var _storage = __webpack_require__(2);
+
+	var _storage2 = _interopRequireDefault(_storage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// type="password" だったinputのname属性
 	var typePasswordNames = [];
@@ -11543,8 +11556,8 @@
 	function gatherInputData() {
 	  typePasswordNames = [];
 	  var obj = {};
-	  $('input:visible:not(:file),select:visible').each(function () {
-	    var $self = $(this);
+	  (0, _jquery2.default)('input:visible:not(:file),select:visible').each(function () {
+	    var $self = (0, _jquery2.default)(this);
 	    var name = $self.attr('name');
 	    if ('undefined' == typeof name) {
 	      return;
@@ -11562,8 +11575,8 @@
 	      value = $self.val();
 	    }
 
-	    if (_.has(obj, name)) {
-	      if (_.isArray(obj[name])) {
+	    if (_underscore2.default.has(obj, name)) {
+	      if (_underscore2.default.isArray(obj[name])) {
 	        obj[name].push(value);
 	      } else {
 	        var tmp = obj[name];
@@ -11587,46 +11600,46 @@
 	 * 
 	 */
 	function restoreInputData(data) {
-	  _.each(data, function (values, name) {
-	    var type = $('input[name="' + name + '"]:visible').attr('type');
-	    if (!_.isArray(values)) {
+	  _underscore2.default.each(data, function (values, name) {
+	    var type = (0, _jquery2.default)('input[name="' + name + '"]:visible').attr('type');
+	    if (!_underscore2.default.isArray(values)) {
 	      values = [values];
 	    }
 
 	    switch (type) {
 	      case undefined:
 	        // select
-	        $('select[name="' + name + '"]:visible').each(function (i) {
-	          if (_.size(values) <= i) {
+	        (0, _jquery2.default)('select[name="' + name + '"]:visible').each(function (i) {
+	          if (_underscore2.default.size(values) <= i) {
 	            return;
 	          }
-	          $(this).val(values[i]);
+	          (0, _jquery2.default)(this).val(values[i]);
 	        });
 	        // textarea
-	        $('textarea[name="' + name + '"]:visible').each(function (i) {
-	          if (_.size(values) <= i) {
+	        (0, _jquery2.default)('textarea[name="' + name + '"]:visible').each(function (i) {
+	          if (_underscore2.default.size(values) <= i) {
 	            return;
 	          }
-	          $(this).val(values[i]);
+	          (0, _jquery2.default)(this).val(values[i]);
 	        });
 	        break;
 	      // checkbox
 	      case 'checkbox':
-	        $('input[type="checkbox"][name="' + name + '"]:visible').each(function (i) {
-	          if (_.size(values) <= i) {
+	        (0, _jquery2.default)('input[type="checkbox"][name="' + name + '"]:visible').each(function (i) {
+	          if (_underscore2.default.size(values) <= i) {
 	            return;
 	          }
 	          if (values[i]) {
-	            $(this).prop('checked', true);
+	            (0, _jquery2.default)(this).prop('checked', true);
 	          } else {
-	            $(this).prop('checked', false);
+	            (0, _jquery2.default)(this).prop('checked', false);
 	          }
 	        });
 	        break;
 	      // radio
 	      case 'radio':
-	        _.map(values, function (value) {
-	          $('input[type="radio"][name="' + name + '"][value="' + value + '"]:visible').prop('checked', true);
+	        _underscore2.default.map(values, function (value) {
+	          (0, _jquery2.default)('input[type="radio"][name="' + name + '"][value="' + value + '"]:visible').prop('checked', true);
 	        });
 	        break;
 	      // input
@@ -11635,11 +11648,11 @@
 	      case 'email':
 	      case 'password':
 	      default:
-	        $('input[name="' + name + '"]:visible').each(function (i) {
-	          if (_.size(values) <= i) {
+	        (0, _jquery2.default)('input[name="' + name + '"]:visible').each(function (i) {
+	          if (_underscore2.default.size(values) <= i) {
 	            return;
 	          }
-	          $(this).val(values[i]);
+	          (0, _jquery2.default)(this).val(values[i]);
 	        });
 	        break;
 	    }
@@ -11652,7 +11665,7 @@
 	 *
 	 */
 	function encryptInputData(data, passphrase) {
-	  return '' + CryptoJS.AES.encrypt(JSON.stringify(data), passphrase);
+	  return '' + _cryptoJs2.default.AES.encrypt(JSON.stringify(data), passphrase);
 	}
 
 	/*
@@ -11663,8 +11676,8 @@
 	function decryptInputData(encrypted, passphrase) {
 	  var data = [];
 	  try {
-	    var decrypted = CryptoJS.AES.decrypt(_.first(_.values(encrypted)), passphrase);
-	    data = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+	    var decrypted = _cryptoJs2.default.AES.decrypt(_underscore2.default.first(_underscore2.default.values(encrypted)), passphrase);
+	    data = JSON.parse(decrypted.toString(_cryptoJs2.default.enc.Utf8));
 	  } catch (e) {
 	    alert(chrome.i18n.getMessage('decrypt_error'));
 	    return data;
@@ -11679,16 +11692,16 @@
 	 */
 	function generateKeyhash() {
 	  var data = gatherInputData();
-	  var keys = _.keys(data).sort();
-	  var keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
+	  var keys = _underscore2.default.keys(data).sort();
+	  var keyhash = _cryptoJs2.default.SHA256(JSON.stringify(keys)).toString();
 	  var keymap = {};
-	  storage.get(['keymap']).then(function (items) {
-	    if (_.has(items, 'keymap')) {
+	  _storage2.default.get(['keymap']).then(function (items) {
+	    if (_underscore2.default.has(items, 'keymap')) {
 	      keymap = items['keymap'];
 	    }
 	    keymap[keyhash] = keys;
 	    items['keymap'] = keymap;
-	    return storage.set(items);
+	    return _storage2.default.set(items);
 	  }).then(function (res) {}).catch(function (err) {
 	    console.warn(err);
 	  });
@@ -11701,24 +11714,24 @@
 	 *
 	 */
 	function generateDatahash(data) {
-	  return CryptoJS.SHA256(JSON.stringify(_.sortBy(data, function (val, key) {
+	  return _cryptoJs2.default.SHA256(JSON.stringify(_underscore2.default.sortBy(data, function (val, key) {
 	    return key;
 	  }))).toString();
 	}
 
 	function setPrevdata(tmpkey, tmpdata) {
-	  storage.get([tmpkey]).then(function (previtems) {
+	  _storage2.default.get([tmpkey]).then(function (previtems) {
 	    var prevdatas = [];
 
 	    // 既存データを設置
-	    if (_.has(previtems, tmpkey)) {
+	    if (_underscore2.default.has(previtems, tmpkey)) {
 	      prevdatas = previtems[tmpkey];
 	    }
 	    prevdatas.unshift(tmpdata);
 	    var tmpitems = {};
-	    tmpitems[tmpkey] = _.uniq(prevdatas);
+	    tmpitems[tmpkey] = _underscore2.default.uniq(prevdatas);
 
-	    return storage.set(tmpitems);
+	    return _storage2.default.set(tmpitems);
 	  }).then(function (res) {
 	    removeTmpdata();
 	  }).catch(function (err) {
@@ -11727,15 +11740,15 @@
 	}
 
 	function removeTmpdata() {
-	  storage.remove(['tmpkey', 'tmpdata']).then(function (res) {}).catch(function (err) {
+	  _storage2.default.remove(['tmpkey', 'tmpdata']).then(function (res) {}).catch(function (err) {
 	    console.warn(err);
 	  });
 	}
 
 	function denyHost(host) {
-	  storage.get('options').then(function (items) {
+	  _storage2.default.get('options').then(function (items) {
 	    var options = items['options'];
-	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+	    if (!_underscore2.default.has(items, 'options') || !_underscore2.default.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
 	    }
 	    var denyHosts = options['deny-hosts'];
@@ -11747,16 +11760,16 @@
 	    options['deny-hosts'] = denyHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    return storage.set(setItems);
+	    return _storage2.default.set(setItems);
 	  }).then(function (res) {}).catch(function (err) {
 	    console.warn(err);
 	  });
 	}
 
 	function allowHost(host) {
-	  storage.get('options').then(function (items) {
+	  _storage2.default.get('options').then(function (items) {
 	    var options = items['options'];
-	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+	    if (!_underscore2.default.has(items, 'options') || !_underscore2.default.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
 	    }
 	    var allowHosts = options['allow-hosts'];
@@ -11768,7 +11781,7 @@
 	    options['allow-hosts'] = allowHosts;
 	    var setItems = {};
 	    setItems['options'] = options;
-	    return storage.set(setItems);
+	    return _storage2.default.set(setItems);
 	  }).then(function (res) {}).catch(function (err) {
 	    console.warn(err);
 	  });
@@ -11780,7 +11793,7 @@
 	    return false;
 	  }
 	  var allows = allowHosts.split(/\r\n|\r|\n|,/);
-	  if (_.indexOf(allows, host) < 0) {
+	  if (_underscore2.default.indexOf(allows, host) < 0) {
 	    return false;
 	  }
 	  return true;
@@ -11792,7 +11805,7 @@
 	    return false;
 	  }
 	  var denys = denyHosts.split(/\r\n|\r|\n|,/);
-	  if (_.indexOf(denys, host) < 0) {
+	  if (_underscore2.default.indexOf(denys, host) < 0) {
 	    return false;
 	  }
 	  return true;
@@ -11810,7 +11823,7 @@
 	  options['key-clear'] = 'shift+c';
 	  var items = {};
 	  items['options'] = options;
-	  storage.set(items).then(function (res) {}).catch(function (err) {
+	  _storage2.default.set(items).then(function (res) {}).catch(function (err) {
 	    console.warn(err);
 	  });
 
@@ -11818,35 +11831,35 @@
 	}
 
 	function restoreOptions() {
-	  storage.get('options').then(function (items) {
+	  _storage2.default.get('options').then(function (items) {
 	    var options = items['options'];
-	    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+	    if (!_underscore2.default.has(items, 'options') || !_underscore2.default.has(items['options'], 'key-clear')) {
 	      options = setDefaultOptions();
 	    }
-	    $('#passphrase').val(options['passphrase']);
-	    $('#include-password').prop('checked', options['include-password']);
-	    $('#key-restore').val(options['key-restore']);
-	    $('#key-clear').val(options['key-clear']);
-	    $('#deny-hosts').val(options['deny-hosts']);
-	    $('#allow-hosts').val(options['allow-hosts']);
+	    (0, _jquery2.default)('#passphrase').val(options['passphrase']);
+	    (0, _jquery2.default)('#include-password').prop('checked', options['include-password']);
+	    (0, _jquery2.default)('#key-restore').val(options['key-restore']);
+	    (0, _jquery2.default)('#key-clear').val(options['key-clear']);
+	    (0, _jquery2.default)('#deny-hosts').val(options['deny-hosts']);
+	    (0, _jquery2.default)('#allow-hosts').val(options['allow-hosts']);
 	  }).catch(function (err) {
 	    console.warn(err);
 	  });
 	}
 
 	function saveOptions() {
-	  $('#options-message').hide();
+	  (0, _jquery2.default)('#options-message').hide();
 	  var options = {};
-	  options['passphrase'] = $('#passphrase').val();
-	  options['include-password'] = $('#include-password').prop('checked');
-	  options['key-restore'] = $('#key-restore').val();
-	  options['key-clear'] = $('#key-clear').val();
-	  options['deny-hosts'] = $('#deny-hosts').val();
-	  options['allow-hosts'] = $('#allow-hosts').val();
+	  options['passphrase'] = (0, _jquery2.default)('#passphrase').val();
+	  options['include-password'] = (0, _jquery2.default)('#include-password').prop('checked');
+	  options['key-restore'] = (0, _jquery2.default)('#key-restore').val();
+	  options['key-clear'] = (0, _jquery2.default)('#key-clear').val();
+	  options['deny-hosts'] = (0, _jquery2.default)('#deny-hosts').val();
+	  options['allow-hosts'] = (0, _jquery2.default)('#allow-hosts').val();
 	  var items = {};
 	  items['options'] = options;
-	  storage.set(items).then(function (res) {
-	    $('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
+	  _storage2.default.set(items).then(function (res) {
+	    (0, _jquery2.default)('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
 	  }).catch(function (err) {
 	    console.warn(err);
 	  });
@@ -11854,22 +11867,22 @@
 
 	function clearDataByKeyhash(keyhash) {
 	  if (confirm(chrome.i18n.getMessage('confirm_clear_form_data'))) {
-	    storage.remove(keyhash).then(function (res) {
+	    _storage2.default.remove(keyhash).then(function (res) {
 	      chrome.runtime.sendMessage({ length: 0 }, function (response) {});
 	    }).catch(function (err) {
 	      console.warn(err);
 	    });
-	    storage.get(['keymap']).then(function (items) {
+	    _storage2.default.get(['keymap']).then(function (items) {
 	      var keymap = {};
-	      if (_.has(items, 'keymap')) {
+	      if (_underscore2.default.has(items, 'keymap')) {
 	        keymap = items['keymap'];
 	      }
-	      if (!_.has(keymap, keyhash)) {
+	      if (!_underscore2.default.has(keymap, keyhash)) {
 	        return new Promise.reject('no keyhash');
 	      }
 	      delete keymap[keyhash];
 	      items['keymap'] = keymap;
-	      return storage.set(items);
+	      return _storage2.default.set(items);
 	    }).catch(function (err) {
 	      console.warn(err);
 	    });
@@ -11877,16 +11890,16 @@
 	}
 
 	function clearAllData() {
-	  $('#options-message').hide();
-	  storage.get(['disabled', 'options']).then(function (items) {
+	  (0, _jquery2.default)('#options-message').hide();
+	  _storage2.default.get(['disabled', 'options']).then(function (items) {
 	    return Promise.all([new Promise(function (resolve, reject) {
 	      resolve(items);
-	    }), storage.clear()]);
+	    }), _storage2.default.clear()]);
 	  }).then(function (res) {
 	    var items = res[0];
-	    return storage.set(items);
+	    return _storage2.default.set(items);
 	  }).then(function (res) {
-	    $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
+	    (0, _jquery2.default)('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
 	  }).catch(function (err) {
 	    console.warn(err);
 	  });
@@ -11895,19 +11908,19 @@
 	function getDataByKeyhash() {
 	  var keyhash = generateKeyhash();
 	  return new Promise(function (resolve, reject) {
-	    storage.get(['disabled', 'options', 'tmpkey', 'tmpdata', 'tmphost', keyhash]).then(function (items) {
-	      if (!_.has(items, 'disabled')) {
+	    _storage2.default.get(['disabled', 'options', 'tmpkey', 'tmpdata', 'tmphost', keyhash]).then(function (items) {
+	      if (!_underscore2.default.has(items, 'disabled')) {
 	        reject('disabled');
 	      }
 	      if (items['disabled']) {
 	        reject('disabled');
 	      }
-	      if (!_.has(items, 'options')) {
+	      if (!_underscore2.default.has(items, 'options')) {
 	        setDefaultOptions();
 	        alert(chrome.i18n.getMessage('no_passphrase'));
 	        reject(chrome.i18n.getMessage('no_passphrase'));
 	      }
-	      if (!_.has(items['options'], 'passphrase')) {
+	      if (!_underscore2.default.has(items['options'], 'passphrase')) {
 	        alert(chrome.i18n.getMessage('no_passphrase'));
 	        reject(chrome.i18n.getMessage('no_passphrase'));
 	      }
@@ -11918,7 +11931,7 @@
 	      items['keyhash'] = keyhash;
 
 	      var dataLength = 0;
-	      if (_.has(items, keyhash)) {
+	      if (_underscore2.default.has(items, keyhash)) {
 	        dataLength = items[keyhash].length;
 	      }
 	      chrome.runtime.sendMessage({ length: dataLength }, function (response) {});

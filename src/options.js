@@ -18,7 +18,4 @@ $(() => {
     lib.clearAllData();
   });
   
-  $('#options-message').on('click', () => {
-    $(this).fadeOut();
-  });
 });

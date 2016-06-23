@@ -1,10 +1,10 @@
-var _ = require('underscore');
-var $ = require('jquery');
-var CryptoJS = require('crypto-js');
-var storage = require('./storage');
+import _ from 'underscore';
+import $ from 'jquery';
+import CryptoJS from 'crypto-js';
+import storage from './storage';
 
 // type="password" だったinputのname属性
-var typePasswordNames = [];
+let typePasswordNames = [];
 
 /*
  * gatherInputData
@@ -14,14 +14,14 @@ var typePasswordNames = [];
  */
 function gatherInputData() {
   typePasswordNames = [];
-  var obj = {};
+  let obj = {};
   $('input:visible:not(:file),select:visible').each(function() {
-    var $self = $(this);
-    var name = $self.attr('name');
+    let $self = $(this);
+    let name = $self.attr('name');
     if ('undefined' == typeof name) {
       return;
     }
-    var value = null;
+    let value = null;
     if ($self.attr('type') == 'checkbox') {
       value =  $self.prop('checked');
     } else if ($self.attr('type') == 'radio') {
@@ -38,7 +38,7 @@ function gatherInputData() {
       if (_.isArray(obj[name])) {
         obj[name].push(value);
       } else {
-        var tmp = obj[name];
+        let tmp = obj[name];
         obj[name] = [tmp, value];
       }
     } else {
@@ -60,7 +60,7 @@ function gatherInputData() {
  */
 function restoreInputData(data) {
   _.each(data, function(values, name) {
-    var type = $('input[name="' + name + '"]:visible').attr('type');
+    let type = $('input[name="' + name + '"]:visible').attr('type');
     if (!_.isArray(values)) {
       values = [values];
     }            
@@ -133,9 +133,9 @@ function encryptInputData(data, passphrase) {
  *
  */
 function decryptInputData(encrypted, passphrase) {
-  var data = [];
+  let data = [];
   try {
-    var decrypted = CryptoJS.AES.decrypt(_.first(_.values(encrypted)), passphrase);
+    let decrypted = CryptoJS.AES.decrypt(_.first(_.values(encrypted)), passphrase);
     data = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
   } catch(e) {
     alert(chrome.i18n.getMessage('decrypt_error'));
@@ -150,10 +150,10 @@ function decryptInputData(encrypted, passphrase) {
  *
  */
 function generateKeyhash() {
-  var data = gatherInputData();
-  var keys = _.keys(data).sort();
-  var keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
-  var keymap = {};
+  let data = gatherInputData();
+  let keys = _.keys(data).sort();
+  let keyhash = CryptoJS.SHA256(JSON.stringify(keys)).toString();
+  let keymap = {};
   storage.get(['keymap']).then((items) => {
     if (_.has(items, 'keymap')) {
       keymap = items['keymap'];
@@ -182,14 +182,14 @@ function generateDatahash(data) {
 
 function setPrevdata(tmpkey, tmpdata) {
   storage.get([tmpkey]).then((previtems) => {
-    var prevdatas = [];
+    let prevdatas = [];
     
     // 既存データを設置
     if (_.has(previtems, tmpkey)) {
       prevdatas = previtems[tmpkey];
     }
     prevdatas.unshift(tmpdata);
-    var tmpitems ={};
+    let tmpitems ={};
     tmpitems[tmpkey] = _.uniq(prevdatas);
 
     return storage.set(tmpitems);
@@ -209,18 +209,18 @@ function removeTmpdata() {
 
 function denyHost(host) {
   storage.get('options').then((items) => {
-    var options = items['options'];
+    let options = items['options'];
     if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
       options = setDefaultOptions();
     }
-    var denyHosts = options['deny-hosts'];
+    let denyHosts = options['deny-hosts'];
     if (denyHosts) {
       denyHosts += "\n" + host;
     } else {
       denyHosts = host;
     }
     options['deny-hosts'] = denyHosts;
-    var setItems = {};
+    let setItems = {};
     setItems['options'] = options;
     return storage.set(setItems);
   }).then((res) => {}).catch((err) => {
@@ -230,18 +230,18 @@ function denyHost(host) {
 
 function allowHost(host) {
   storage.get('options').then((items) => {
-    var options = items['options'];
+    let options = items['options'];
     if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
       options = setDefaultOptions();
     }
-    var allowHosts = options['allow-hosts'];
+    let allowHosts = options['allow-hosts'];
     if (allowHosts) {
       allowHosts += "\n" + host;
     } else {
       allowHosts = host;
     }
     options['allow-hosts'] = allowHosts;
-    var setItems = {};
+    let setItems = {};
     setItems['options'] = options;
     return storage.set(setItems);    
   }).then((res) => {}).catch((err) => {
@@ -250,11 +250,11 @@ function allowHost(host) {
 }
 
 function isAllowHost(allowHosts) {
-  var host = window.location.host;
+  let host = window.location.host;
   if (!allowHosts) {
     return false;
   }
-  var allows = allowHosts.split(/\r\n|\r|\n|,/);
+  let allows = allowHosts.split(/\r\n|\r|\n|,/);
   if (_.indexOf(allows, host) < 0) {
     return false;
   }
@@ -262,11 +262,11 @@ function isAllowHost(allowHosts) {
 }
 
 function isDenyHost(denyHosts) {
-  var host = window.location.host;
+  let host = window.location.host;
   if (!denyHosts) {
     return false;
   }
-  var denys = denyHosts.split(/\r\n|\r|\n|,/);
+  let denys = denyHosts.split(/\r\n|\r|\n|,/);
   if (_.indexOf(denys, host) < 0) {
     return false;
   }
@@ -278,12 +278,12 @@ function isDenyHost(denyHosts) {
  * 
  */
 function setDefaultOptions() {
-  var options ={};
+  let options ={};
   options['passphrase'] = '';
   options['include-password'] = false;
   options['key-restore'] = 'shift+r';
   options['key-clear'] = 'shift+c';
-  var items = {};
+  let items = {};
   items['options'] = options;
   storage.set(items).then((res) => {}).catch((err) => {
     console.warn(err);
@@ -294,7 +294,7 @@ function setDefaultOptions() {
 
 function restoreOptions() {
   storage.get('options').then((items) => {
-    var options = items['options'];
+    let options = items['options'];
     if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
       options = setDefaultOptions();
     }
@@ -311,14 +311,14 @@ function restoreOptions() {
 
 function saveOptions() {
   $('#options-message').hide();
-  var options ={};
+  let options ={};
   options['passphrase'] = $('#passphrase').val();
   options['include-password'] = $('#include-password').prop('checked');
   options['key-restore'] = $('#key-restore').val();
   options['key-clear'] = $('#key-clear').val();
   options['deny-hosts'] = $('#deny-hosts').val();
   options['allow-hosts'] = $('#allow-hosts').val();
-  var items = {};
+  let items = {};
   items['options'] = options;
   storage.set(items).then((res) => {
     $('#options-message').text(chrome.i18n.getMessage('save_options_complete')).fadeIn();
@@ -335,7 +335,7 @@ function clearDataByKeyhash(keyhash) {
       console.warn(err);
     });
     storage.get(['keymap']).then((items) => {
-      var keymap = {};
+      let keymap = {};
       if (_.has(items, 'keymap')) {
         keymap = items['keymap'];
       }
@@ -361,7 +361,7 @@ function clearAllData() {
       storage.clear()
     ]);
   }).then((res) => {
-    var items = res[0];
+    let items = res[0];
     return storage.set(items);
   }).then((res) => {
     $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
@@ -371,7 +371,7 @@ function clearAllData() {
 }
 
 function getDataByKeyhash() {
-  var keyhash = generateKeyhash();
+  let keyhash = generateKeyhash();
   return new Promise((resolve, reject) => {
     storage.get([
       'disabled',
@@ -402,7 +402,7 @@ function getDataByKeyhash() {
       }
       items['keyhash'] = keyhash;
 
-      var dataLength = 0;
+      let dataLength = 0;
       if (_.has(items, keyhash)) {
         dataLength = items[keyhash].length;
       }

@@ -36,28 +36,28 @@ $(() => {
         
         $('.typd-box').animate({
           bottom:0
-        }, () => {
+        }, function(){
           let $box = $(this);
-          $('.typd-btn-save').on('click', () => {
+          $('.typd-btn-save').on('click', function(){
             lib.setPrevdata(tmpkey, tmpdata);
-            $box.animate({bottom:-50}, () => {
+            $box.animate({bottom:-50}, function(){
               $box.remove();
             });
           });
-          $('.typd-btn-cancel').on('click', () => {
-            $box.animate({bottom:-50}, () => {
+          $('.typd-btn-cancel').on('click', function(){
+            $box.animate({bottom:-50}, function(){
               $box.remove();
             });
           });
-          $('.typd-btn-allow-host').on('click', () => {
+          $('.typd-btn-allow-host').on('click', function(){
             lib.allowHost(tmphost);
-            $box.animate({bottom:-50}, () => {
+            $box.animate({bottom:-50}, function(){
               $box.remove();
             });
           });
-          $('.typd-btn-deny-host').on('click', () => {
+          $('.typd-btn-deny-host').on('click', function(){
             lib.denyHost(tmphost);
-            $box.animate({bottom:-50}, () => {
+            $box.animate({bottom:-50}, function(){
               $box.remove();
             });
           });

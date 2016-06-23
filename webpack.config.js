@@ -1,4 +1,3 @@
-// webpack.config.js
 module.exports = {
   entry: {
     index: __dirname + '/src/index.js',

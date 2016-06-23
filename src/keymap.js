@@ -25,9 +25,9 @@ storage.get(['keymap']).then((items) => {
           + v.toString().replace(/,/g, '</span><span class="input-name">')
           + '</span>'
           + '</td></tr>';
-    $tbody.append(tr);
+    $tbody.append(tr);    
   });
-  $('.clear-data').on('click', () => {
+  $('.clear-data').on('click', function() {
     let $self = $(this);
     let keyhash = $self.data('keyhash');
     lib.clearDataByKeyhash(keyhash);
