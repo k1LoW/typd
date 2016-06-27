@@ -5,7 +5,7 @@ import storage from './storage';
 
 $(() => {
   chrome.storage.local.getBytesInUse(null, (byteInUse) => {
-    $('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' bytes )');
+    $('#used-storage-size').text((byteInUse / chrome.storage.local.QUOTA_BYTES * 100).toFixed(2) + '% ( ' + byteInUse.toLocaleString() + ' byte )');
   });
 });
 
