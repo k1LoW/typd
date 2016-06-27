@@ -15,8 +15,11 @@ let typePasswordNames = [];
 function gatherInputData() {
   typePasswordNames = [];
   let obj = {};
-  $('input:visible:not(:file),select:visible').each(function() {
+  $('input:visible:not(:file),select:visible,textarea:visible').each(function() {
     let $self = $(this);
+    if ($self.attr('type') == 'submit') {
+      return;
+    }
     let name = $self.attr('name');
     if ('undefined' == typeof name) {
       return;
@@ -27,8 +30,6 @@ function gatherInputData() {
     } else if ($self.attr('type') == 'radio') {
       if ($self.prop('checked')) {
         value = $self.val();
-      } else {
-        return;
       }
     } else {
       value = $self.val();
