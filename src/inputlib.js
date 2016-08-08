@@ -211,7 +211,7 @@ function removeTmpdata() {
 function denyHost(host) {
   storage.get('options').then((items) => {
     let options = items['options'];
-    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+    if (!_.has(items, 'options')) {
       options = setDefaultOptions();
     }
     let denyHosts = options['deny-hosts'];
@@ -232,7 +232,7 @@ function denyHost(host) {
 function allowHost(host) {
   storage.get('options').then((items) => {
     let options = items['options'];
-    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+    if (!_.has(items, 'options')) {
       options = setDefaultOptions();
     }
     let allowHosts = options['allow-hosts'];
@@ -278,34 +278,49 @@ function isDenyHost(denyHosts) {
  * options
  * 
  */
+let defaultOptions = {
+  'passphrase': '',
+  'include-password': false,
+  'key-store': 'shift+s',
+  'key-restore': 'shift+r',
+  'key-clear': 'shift+c',
+  'deny-hosts': '',
+  'allow-hosts': ''
+};
+
 function setDefaultOptions() {
-  let options ={};
-  options['passphrase'] = '';
-  options['include-password'] = false;
-  options['key-restore'] = 'shift+r';
-  options['key-clear'] = 'shift+c';
   let items = {};
-  items['options'] = options;
+  items['options'] = defaultOptions;
   storage.set(items).then((res) => {}).catch((err) => {
     console.warn(err);
   });
   
-  return options;
+  return defaultOptions;
 }
 
 function restoreOptions() {
   storage.get('options').then((items) => {
-    let options = items['options'];
-    if (!_.has(items, 'options') || !_.has(items['options'], 'key-clear')) {
+    let options;
+    if (!_.has(items, 'options')) {
       options = setDefaultOptions();
+    } else {
+      options = items['options'];
+      _.each(defaultOptions, (value, key)=> {
+        if (!_.has(options, key)) {
+          options[key] = defaultOptions[key];
+        }
+      });      
     }
     $('#passphrase').val(options['passphrase']);
     $('#include-password').prop('checked', options['include-password']);
+    $('#key-store').val(options['key-store']);
     $('#key-restore').val(options['key-restore']);
     $('#key-clear').val(options['key-clear']);
     $('#deny-hosts').val(options['deny-hosts']);
     $('#allow-hosts').val(options['allow-hosts']);
-  }).catch((err) => {
+    items['options'] = options;
+    return storage.set(items);
+  }).then((res) => {}).catch((err) => {
     console.warn(err);
   });
 }
@@ -315,6 +330,7 @@ function saveOptions() {
   let options ={};
   options['passphrase'] = $('#passphrase').val();
   options['include-password'] = $('#include-password').prop('checked');
+  options['key-store'] = $('#key-store').val();
   options['key-restore'] = $('#key-restore').val();
   options['key-clear'] = $('#key-clear').val();
   options['deny-hosts'] = $('#deny-hosts').val();

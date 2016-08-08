@@ -41,6 +41,9 @@
       }
     }
   },
+  "save_form_data_complete": {
+    "message": "入力データを保存しました"
+  },
   "decrypt_error": {
     "message": "'typd: データ復号化に失敗しました。パスフレーズが間違っている可能性があります'"
   },
