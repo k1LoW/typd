@@ -75,6 +75,62 @@ $(() => {
       return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
     };
 
+    key(items['options']['key-store'], (event, handler) => {
+      lib.getDataByKeyhash().then((items) => {
+        let keyhash = items['keyhash'];
+        if (!confirm(chrome.i18n.getMessage('confirm_save_this_form_data'))) {
+          return Promise.resolve(false);
+        }
+        
+        let data = lib.gatherInputData();
+
+        if (JSON.stringify(data) == '{}') {
+          return Promise.resolve(false);
+        }
+        if (_.uniq(_.values(data)).toString() == [""].toString()) {
+          return Promise.resolve(false);
+        }
+
+        if (!includePassword) {
+          _.map(lib.typePasswordNames, (name) => {
+            data[name] = '';
+          });
+        }
+
+        let dataArray = [];
+        let encrypted = lib.encryptInputData(data, passphrase);
+        let datahash = lib.generateDatahash(data);
+
+        // 既存データ
+        if (_.has(items, keyhash)) {
+          dataArray = items[keyhash];
+        }
+
+        let hashitem = {};
+        hashitem[datahash] = encrypted;
+        
+        let exists = _.filter(dataArray, (d) => {
+          return (datahash == _.first(_.keys(d)));
+        }).length;
+
+        items = {};
+        let filterd = _.filter(dataArray, (d) => {
+          return (datahash != _.first(_.keys(d)));
+        });
+        filterd.unshift(hashitem);        
+        items[keyhash] = _.uniq(filterd);
+        
+        return storage.set(items);
+      }).then((res) => {
+        if (res) {
+          alert(chrome.i18n.getMessage('save_form_data_complete'));
+        }
+      }).catch((err) => {
+        console.warn(err);
+      });
+      return false;
+    });
+    
     key(items['options']['key-restore'], (event, handler) => {
       lib.getDataByKeyhash().then((items) => {
         let keyhash = items['keyhash'];
@@ -143,7 +199,7 @@ $(() => {
         let encrypted = lib.encryptInputData(data, passphrase);
         let datahash = lib.generateDatahash(data);
 
-        // 既存データを設置
+        // 既存データ
         if (_.has(items, keyhash)) {
           dataArray = items[keyhash];
         }
