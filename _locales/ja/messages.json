@@ -81,10 +81,13 @@
     "message": "保存データでフォームをリストアします。連続して押すと過去の保存データでフォームをリストアします。`shift`、`option`、`alt`、`ctrl`、`control`、`command`のキーをサポートしています。`shift+r` がデフォルトのキーバインドになります"
   },
   "clear_stored_data": {
-    "message": "カレントページと同じフォームパターンの入力データをクリアしまう"
+    "message": "カレントページと同じフォームパターンの入力データを全てクリアします"
   },
   "clear_stored_data_description": {
     "message": "カレントページと同じフォームパターンの入力データを全てクリアします"
+  },
+  "store_input_data_description": {
+    "message": "カレントページのフォームの入力データを保存します"
   },
   "hosts": {
     "message": "ホスト設定"

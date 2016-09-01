@@ -146,6 +146,9 @@ span.input-name {
 .text-clear-all-data:before {
   content: '__MSG_clear_all_data__';
 }
+.text-store-input-data-description:before {
+  content: '__MSG_store_input_data_description__';
+}
 .text-clear-all-data-description:before {
   content: '__MSG_clear_all_data_description__';
 }
