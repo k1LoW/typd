@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import $ from 'jquery';
 import CryptoJS from 'crypto-js';
 import storage from './storage';

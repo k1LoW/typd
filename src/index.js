@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import $ from 'jquery';
 import key from 'keymaster';
 import lib from './inputlib';
