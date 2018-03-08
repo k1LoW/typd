@@ -1,6 +1,8 @@
 # typd [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/jnnbmnfnjfoodeahelonehhokpbjpbmb.svg)](https://chrome.google.com/webstore/detail/typd/jnnbmnfnjfoodeahelonehhokpbjpbmb?hl=ja)
 
-> お前は今まで入力したフォームの値を覚えているのか?
+> Do you remember the input values you entered in the form in your life?
+> 
+> ( お前は今まで入力したフォームの値を覚えているのか? )
 
 ![icon](icon_128.png)
 
