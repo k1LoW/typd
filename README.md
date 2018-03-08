@@ -1,4 +1,4 @@
-# typd
+# typd [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/jnnbmnfnjfoodeahelonehhokpbjpbmb.svg)](https://chrome.google.com/webstore/detail/typd/jnnbmnfnjfoodeahelonehhokpbjpbmb?hl=ja)
 
 > お前は今まで入力したフォームの値を覚えているのか?
 
