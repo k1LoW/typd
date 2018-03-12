@@ -10,12 +10,12 @@ let typePasswordNames = [];
  * gatherInputData
  * 表示されているinput select textareaから入力値を収集して
  * name属性と入力値のhash objectに変換
- * 
+ *
  */
 function gatherInputData() {
   typePasswordNames = [];
   let obj = {};
-  $('input:visible:not(:file),select:visible,textarea:visible').each(function() {
+  $('input:not(:file),select,textarea').each(function() {
     let $self = $(this);
     if ($self.attr('type') == 'submit') {
       return;
@@ -34,7 +34,7 @@ function gatherInputData() {
     } else {
       value = $self.val();
     }
-    
+
     if (_.has(obj, name)) {
       if (_.isArray(obj[name])) {
         obj[name].push(value);
@@ -45,7 +45,7 @@ function gatherInputData() {
     } else {
       obj[name] = value;
     }
-    
+
     if ($self.attr('type') == 'password') {
       typePasswordNames.push($self.attr('name'));
     }
@@ -56,16 +56,16 @@ function gatherInputData() {
 /*
  * restoreInputData
  * hash objectから表示されているinput select textareaに入力値をセットする
- * 
- * 
+ *
+ *
  */
 function restoreInputData(data) {
   _.each(data, function(values, name) {
     let type = $('input[name="' + name + '"]:visible').attr('type');
     if (!_.isArray(values)) {
       values = [values];
-    }            
-    
+    }
+
     switch (type) {
     case undefined:
       // select
@@ -88,7 +88,7 @@ function restoreInputData(data) {
       $('input[type="checkbox"][name="' + name + '"]:visible').each(function(i) {
         if (_.size(values) <= i) {
           return;
-        }                
+        }
         if (values[i]) {
           $(this).prop('checked', true);
         } else {
@@ -141,7 +141,7 @@ function decryptInputData(encrypted, passphrase) {
   } catch(e) {
     alert(chrome.i18n.getMessage('decrypt_error'));
     return data;
-  }    
+  }
   return data;
 }
 
@@ -163,11 +163,11 @@ function generateKeyhash() {
     items['keymap'] = keymap;
     return storage.set(items);
   }).then((res) => {
-    
+
   }).catch((err) => {
     console.warn(err);
   });
-  
+
   return keyhash;
 }
 
@@ -184,7 +184,7 @@ function generateDatahash(data) {
 function setPrevdata(tmpkey, tmpdata) {
   storage.get([tmpkey]).then((previtems) => {
     let prevdatas = [];
-    
+
     // 既存データを設置
     if (_.has(previtems, tmpkey)) {
       prevdatas = previtems[tmpkey];
@@ -244,7 +244,7 @@ function allowHost(host) {
     options['allow-hosts'] = allowHosts;
     let setItems = {};
     setItems['options'] = options;
-    return storage.set(setItems);    
+    return storage.set(setItems);
   }).then((res) => {}).catch((err) => {
     console.warn(err);
   });
@@ -276,7 +276,7 @@ function isDenyHost(denyHosts) {
 
 /*
  * options
- * 
+ *
  */
 let defaultOptions = {
   'passphrase': '',
@@ -294,7 +294,7 @@ function setDefaultOptions() {
   storage.set(items).then((res) => {}).catch((err) => {
     console.warn(err);
   });
-  
+
   return defaultOptions;
 }
 
@@ -309,7 +309,7 @@ function restoreOptions() {
         if (!_.has(options, key)) {
           options[key] = defaultOptions[key];
         }
-      });      
+      });
     }
     $('#passphrase').val(options['passphrase']);
     $('#include-password').prop('checked', options['include-password']);
@@ -365,7 +365,7 @@ function clearDataByKeyhash(keyhash) {
     }).catch((err) => {
       console.warn(err);
     });
-  }  
+  }
 }
 
 function clearAllData() {
@@ -384,7 +384,7 @@ function clearAllData() {
     $('#options-message').text(chrome.i18n.getMessage('clear_all_data_complete')).fadeIn();
   }).catch((err) => {
     console.warn(err);
-  });  
+  });
 }
 
 function getDataByKeyhash() {
@@ -424,12 +424,12 @@ function getDataByKeyhash() {
         dataLength = items[keyhash].length;
       }
       chrome.runtime.sendMessage({length:dataLength}, function(response) {});
-      
+
       resolve(items);
     }).catch((err) => {
       reject(err);
     });
-  });  
+  });
 }
 
 module.exports = {
