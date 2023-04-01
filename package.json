@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "keymaster": "^1.6.2",
     "lodash": "^4.17.5"
   },
