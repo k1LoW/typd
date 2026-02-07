@@ -32,6 +32,6 @@
     "@babel/preset-env": "^7.23.2",
     "babel-loader": "^8.0.0-beta.0",
     "octopublish": "^0.6.0",
-    "webpack": "^5.94.0"
+    "webpack": "^5.104.1"
   }
 }
